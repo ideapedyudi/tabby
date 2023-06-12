@@ -23,6 +23,8 @@ export class ProfilesService {
         weight: 0,
         isBuiltin: false,
         isTemplate: false,
+        terminalColorScheme: null,
+        behaviorOnSessionEnd: 'auto',
     }
 
     constructor (
@@ -94,6 +96,8 @@ export class ProfilesService {
         const freeInputEquivalent = provider?.intoQuickConnectString(fullProfile) ?? undefined
         return {
             ...profile,
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+            group: profile.group || '',
             freeInputEquivalent,
             description: provider?.getDescription(fullProfile),
         }
@@ -148,6 +152,8 @@ export class ProfilesService {
                 }
 
                 profiles = profiles.filter(x => !x.isTemplate)
+
+                profiles = profiles.filter(x => x.id && !this.config.store.profileBlacklist.includes(x.id))
 
                 options = [...options, ...profiles.map((p): SelectorOption<void> => ({
                     ...this.selectorOptionForProfile(p),

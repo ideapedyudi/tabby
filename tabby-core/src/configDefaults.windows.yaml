@@ -23,6 +23,7 @@ hotkeys:
     - 'Ctrl-Shift'
   duplicate-tab: []
   restart-tab: []
+  reconnect-tab: []
   explode-tab:
     - 'Ctrl-Shift-.'
   combine-tabs:
@@ -97,3 +98,5 @@ hotkeys:
     - 'Ctrl-Shift-E'
   command-selector:
     - 'Ctrl-Shift-P'
+terminal:
+  identification: wt

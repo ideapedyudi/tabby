@@ -8,7 +8,7 @@ import { Config, ConfigSyncService } from '../services/configSync.service'
 /** @hidden */
 @Component({
     selector: 'config-sync-settings-tab',
-    template: require('./configSyncSettingsTab.component.pug'),
+    templateUrl: './configSyncSettingsTab.component.pug',
 })
 export class ConfigSyncSettingsTabComponent extends BaseComponent {
     connectionSuccessful: boolean|null = null
@@ -106,6 +106,24 @@ export class ConfigSyncSettingsTabComponent extends BaseComponent {
         this.configSync.setConfig(cfg)
         await this.configSync.download()
         this.notifications.info(this.translate.instant('Config downloaded'))
+    }
+
+    async delete (cfg: Config) {
+        if ((await this.platform.showMessageBox({
+            type: 'warning',
+            message: this.translate.instant('Delete the config on the remote side?'),
+            buttons: [
+                this.translate.instant('Delete'),
+                this.translate.instant('Cancel'),
+            ],
+            defaultId: 1,
+            cancelId: 1,
+        })).response === 1) {
+            return
+        }
+        await this.configSync.delete(cfg)
+        this.loadConfigs()
+        this.notifications.info(this.translate.instant('Config deleted'))
     }
 
     hasMatchingRemoteConfig () {

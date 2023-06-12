@@ -4,7 +4,7 @@ import slugify from 'slugify'
 import deepClone from 'clone-deep'
 import { Component, Inject } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { ConfigService, HostAppService, Profile, SelectorService, ProfilesService, PromptModalComponent, PlatformService, BaseComponent, PartialProfile, ProfileProvider, TranslateService } from 'tabby-core'
+import { ConfigService, HostAppService, Profile, SelectorService, ProfilesService, PromptModalComponent, PlatformService, BaseComponent, PartialProfile, ProfileProvider, TranslateService, Platform, AppHotkeyProvider } from 'tabby-core'
 import { EditProfileModalComponent } from './editProfileModal.component'
 
 interface ProfileGroup {
@@ -19,8 +19,8 @@ _('Ungrouped')
 
 /** @hidden */
 @Component({
-    template: require('./profilesSettingsTab.component.pug'),
-    styles: [require('./profilesSettingsTab.component.scss')],
+    templateUrl: './profilesSettingsTab.component.pug',
+    styleUrls: ['./profilesSettingsTab.component.scss'],
 })
 export class ProfilesSettingsTabComponent extends BaseComponent {
     profiles: PartialProfile<Profile>[] = []
@@ -28,6 +28,7 @@ export class ProfilesSettingsTabComponent extends BaseComponent {
     templateProfiles: PartialProfile<Profile>[] = []
     profileGroups: ProfileGroup[]
     filter = ''
+    Platform = Platform
 
     constructor (
         public config: ConfigService,
@@ -145,6 +146,13 @@ export class ProfilesSettingsTabComponent extends BaseComponent {
             this.profilesService.providerForProfile(profile)?.deleteProfile(
                 this.profilesService.getConfigProxyForProfile(profile))
             this.config.store.profiles = this.config.store.profiles.filter(x => x !== profile)
+            const profileHotkeyName = AppHotkeyProvider.getProfileHotkeyName(profile)
+            if (this.config.store.hotkeys.profile.hasOwnProperty(profileHotkeyName)) {
+                const profileHotkeys = deepClone(this.config.store.hotkeys.profile)
+                // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+                delete profileHotkeys[profileHotkeyName]
+                this.config.store.hotkeys.profile = profileHotkeys
+            }
             await this.config.save()
         }
     }
@@ -155,10 +163,13 @@ export class ProfilesSettingsTabComponent extends BaseComponent {
         const profileGroupCollapsed = JSON.parse(window.localStorage.profileGroupCollapsed ?? '{}')
 
         for (const profile of this.profiles) {
-            let group = this.profileGroups.find(x => x.name === profile.group)
+            // Group null, undefined and empty together
+            // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+            let group = this.profileGroups.find(x => x.name === (profile.group || ''))
             if (!group) {
                 group = {
-                    name: profile.group,
+                    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                    name: profile.group || '',
                     profiles: [],
                     editable: true,
                     collapsed: profileGroupCollapsed[profile.group ?? ''] ?? false,
@@ -285,5 +296,19 @@ export class ProfilesSettingsTabComponent extends BaseComponent {
         Object.assign(model, result)
         this.config.store.profileDefaults[provider.id] = model
         await this.config.save()
+    }
+
+    blacklistProfile (profile: PartialProfile<Profile>): void {
+        this.config.store.profileBlacklist = [...this.config.store.profileBlacklist, profile.id]
+        this.config.save()
+    }
+
+    unblacklistProfile (profile: PartialProfile<Profile>): void {
+        this.config.store.profileBlacklist = this.config.store.profileBlacklist.filter(x => x !== profile.id)
+        this.config.save()
+    }
+
+    isProfileBlacklisted (profile: PartialProfile<Profile>): boolean {
+        return profile.id && this.config.store.profileBlacklist.includes(profile.id)
     }
 }

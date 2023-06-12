@@ -9,6 +9,7 @@ import { ConfigProvider } from '../api/configProvider'
 import { PlatformService } from '../api/platform'
 import { HostAppService } from '../api/hostApp'
 import { Vault, VaultService } from './vault.service'
+import { serializeFunction } from '../utils'
 const deepmerge = require('deepmerge')
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -146,6 +147,7 @@ export class ConfigService {
             this.store.vault = vault.store
             this.save()
         })
+        this.save = serializeFunction(this.save.bind(this))
     }
 
     mergeDefaults (): unknown {
@@ -234,11 +236,13 @@ export class ConfigService {
      *
      * @typeparam T Base provider type
      */
-    enabledServices<T extends object> (services: T[]): T[] { // eslint-disable-line @typescript-eslint/ban-types
+    enabledServices<T extends object> (services: T[]|undefined): T[] { // eslint-disable-line @typescript-eslint/ban-types
+        if (!services) {
+            return []
+        }
         if (!this.servicesCache) {
             this.servicesCache = {}
-            const ngModule = window['rootModule'].ɵinj
-            for (const imp of ngModule.imports) {
+            for (const imp of window['pluginModules']) {
                 const module = imp.ngModule || imp
                 if (module.ɵinj?.providers) {
                     this.servicesCache[module.pluginName] = module.ɵinj.providers.map(provider => {
@@ -250,7 +254,9 @@ export class ConfigService {
         return services.filter(service => {
             for (const pluginName in this.servicesCache) {
                 if (this.servicesCache[pluginName].includes(service.constructor)) {
+                    const id = `${pluginName}:${service.constructor.name}`
                     return !this.store?.pluginBlacklist?.includes(pluginName)
+                        && !this.store?.providerBlacklist?.includes(id)
                 }
             }
             return true

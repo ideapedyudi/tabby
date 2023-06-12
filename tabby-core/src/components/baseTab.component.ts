@@ -19,6 +19,7 @@ export interface GetRecoveryTokenOptions {
 /**
  * Abstract base class for custom tab components
  */
+// @Component({ template: '' })
 export abstract class BaseTabComponent extends BaseComponent {
     /**
      * Parent tab (usually a SplitTabComponent)
@@ -189,6 +190,14 @@ export abstract class BaseTabComponent extends BaseComponent {
         this.viewContainer.detach(this.viewContainer.indexOf(this.viewContainerEmbeddedRef))
         this.viewContainerEmbeddedRef = undefined
         this.viewContainer = undefined
+    }
+
+    get topmostParent (): BaseTabComponent|null {
+        let parent = this.parent
+        while (parent?.parent) {
+            parent = parent.parent
+        }
+        return parent
     }
 
     /**

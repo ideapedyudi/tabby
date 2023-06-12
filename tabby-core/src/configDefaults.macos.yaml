@@ -36,10 +36,10 @@ hotkeys:
     - '⌘-8'
   tab-9:
     - '⌘-9'
-  tab-10:
-    - '⌘-0'
+  tab-10: []
   duplicate-tab: []
   restart-tab: []
+  reconnect-tab: []
   explode-tab:
     - '⌘-Shift-.'
   combine-tabs:

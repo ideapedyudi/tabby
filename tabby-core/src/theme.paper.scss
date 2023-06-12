@@ -19,10 +19,9 @@ $tab-border-radius: 5px;
 $button-hover-bg: rgba(0, 0, 0, .125);
 $button-active-bg: rgba(0, 0, 0, .25);
 
-$theme-colors: (
-    "primary":    $orange,
-    "secondary":  $base0
-);
+
+$primary: #fd7e14;
+$secondary: #495057;
 
 $content-bg: rgba($white, 0.65);
 $content-bg-solid: $white;
@@ -256,6 +255,11 @@ multi-hotkey-input {
         }
     }
 
+    .item:has(.duplicate) {
+        background-color: map-get($theme-colors, 'danger');
+        border: 1px solid map-get($theme-colors, 'danger');
+    }
+
     .add {
         color: #777;
         padding: 4px 10px 0;
@@ -264,6 +268,11 @@ multi-hotkey-input {
     .add, .item .body, .item .remove {
         &:hover { background: darken($body-bg2, 5%); }
         &:active { background: darken($body-bg2, 15%); }
+    }
+
+    .add:has(.duplicate), .item:has(.duplicate) .body, .item:has(.duplicate) .remove {
+        &:hover { background: darken(map-get($theme-colors, 'danger'), 5%); }
+        &:active { background: darken(map-get($theme-colors, 'danger'), 15%); }
     }
 }
 
@@ -293,7 +302,7 @@ hotkey-input-modal {
     }
 }
 
-.form-group label {
+.mb-3 label {
     margin-bottom: 2px;
 }
 
@@ -304,7 +313,7 @@ hotkey-input-modal {
     }
 }
 
-[ngbradiogroup] > label.active {
+.btn-check:checked + label {
     background: $blue;
 }
 
@@ -360,7 +369,7 @@ toggle {
     }
 
     &.active .body .toggle {
-        background: theme-colors(primary) !important;
+        background: map-get($theme-colors, primary) !important;
     }
 }
 
@@ -387,4 +396,12 @@ terminal-toolbar {
 
 .bg-dark{
     background-color: $base2 !important;
+}
+
+split-tab-spanner {
+    background: rgba(0, 0, 0, .2);
+
+    &:hover, &.active {
+        background: rgba(255, 255, 255, .125);
+    }
 }

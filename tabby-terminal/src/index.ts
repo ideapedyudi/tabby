@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core'
-import { BrowserModule } from '@angular/platform-browser'
+import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { ToastrModule } from 'ngx-toastr'
@@ -17,6 +17,7 @@ import { SearchPanelComponent } from './components/searchPanel.component'
 import { StreamProcessingSettingsComponent } from './components/streamProcessingSettings.component'
 import { LoginScriptsSettingsComponent } from './components/loginScriptsSettings.component'
 import { TerminalToolbarComponent } from './components/terminalToolbar.component'
+import { ColorSchemeSelectorComponent } from './components/colorSchemeSelector.component'
 
 import { TerminalDecorator } from './api/decorator'
 import { TerminalContextMenuItemProvider } from './api/contextMenuProvider'
@@ -27,16 +28,17 @@ import { PathDropDecorator } from './features/pathDrop'
 import { ZModemDecorator } from './features/zmodem'
 import { TerminalConfigProvider } from './config'
 import { TerminalHotkeyProvider } from './hotkeys'
-import { CopyPasteContextMenu, MiscContextMenu, LegacyContextMenu } from './tabContextMenu'
+import { CopyPasteContextMenu, MiscContextMenu, LegacyContextMenu, ReconnectContextMenu } from './tabContextMenu'
 
 import { Frontend } from './frontends/frontend'
 import { XTermFrontend, XTermWebGLFrontend } from './frontends/xtermFrontend'
 import { TerminalCLIHandler } from './cli'
+import { DefaultColorSchemes } from './colorSchemes'
 
 /** @hidden */
 @NgModule({
     imports: [
-        BrowserModule,
+        CommonModule,
         FormsModule,
         NgbModule,
         ToastrModule,
@@ -57,17 +59,15 @@ import { TerminalCLIHandler } from './cli'
         { provide: TabContextMenuItemProvider, useClass: CopyPasteContextMenu, multi: true },
         { provide: TabContextMenuItemProvider, useClass: MiscContextMenu, multi: true },
         { provide: TabContextMenuItemProvider, useClass: LegacyContextMenu, multi: true },
+        { provide: TabContextMenuItemProvider, useClass: ReconnectContextMenu, multi: true },
 
         { provide: CLIHandler, useClass: TerminalCLIHandler, multi: true },
-    ],
-    entryComponents: [
-        AppearanceSettingsTabComponent,
-        ColorSchemeSettingsTabComponent,
-        TerminalSettingsTabComponent,
+        { provide: TerminalColorSchemeProvider, useClass: DefaultColorSchemes, multi: true },
     ],
     declarations: [
         ColorPickerComponent,
         ColorSchemePreviewComponent,
+        ColorSchemeSelectorComponent,
         AppearanceSettingsTabComponent,
         ColorSchemeSettingsTabComponent,
         TerminalSettingsTabComponent,
@@ -78,6 +78,7 @@ import { TerminalCLIHandler } from './cli'
     ],
     exports: [
         ColorPickerComponent,
+        ColorSchemeSelectorComponent,
         SearchPanelComponent,
         StreamProcessingSettingsComponent,
         LoginScriptsSettingsComponent,
@@ -89,10 +90,12 @@ export default class TerminalModule { } // eslint-disable-line @typescript-eslin
 export { TerminalDecorator, TerminalContextMenuItemProvider, TerminalColorSchemeProvider }
 export { Frontend, XTermFrontend, XTermWebGLFrontend }
 export { BaseTerminalTabComponent } from './api/baseTerminalTab.component'
+export { ConnectableTerminalTabComponent } from './api/connectableTerminalTab.component'
 export * from './api/interfaces'
 export * from './middleware/streamProcessing'
 export * from './middleware/loginScriptProcessing'
 export * from './middleware/oscProcessing'
+export * from './middleware/utf8Splitter'
 export * from './api/middleware'
 export * from './session'
 export { LoginScriptsSettingsComponent, StreamProcessingSettingsComponent }

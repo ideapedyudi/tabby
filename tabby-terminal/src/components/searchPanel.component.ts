@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core'
+import { Subject, debounceTime } from 'rxjs'
 import { Frontend, SearchOptions, SearchState } from '../frontends/frontend'
 import { ConfigService, NotificationsService, TranslateService } from 'tabby-core'
 
 @Component({
     selector: 'search-panel',
-    template: require('./searchPanel.component.pug'),
-    styles: [require('./searchPanel.component.scss')],
+    templateUrl: './searchPanel.component.pug',
+    styleUrls: ['./searchPanel.component.scss'],
 })
 export class SearchPanelComponent {
     @Input() query: string
@@ -17,6 +18,8 @@ export class SearchPanelComponent {
     }
 
     @Output() close = new EventEmitter()
+
+    private queryChanged = new Subject<string>()
 
     icons = {
         'case': require('../icons/case.svg'),
@@ -31,11 +34,15 @@ export class SearchPanelComponent {
         private notifications: NotificationsService,
         private translate: TranslateService,
         public config: ConfigService,
-    ) { }
+    ) {
+        this.queryChanged.pipe(debounceTime(250)).subscribe(() => {
+            this.findPrevious(true)
+        })
+    }
 
     onQueryChange (): void {
         this.state = { resultCount: 0 }
-        this.findPrevious(true)
+        this.queryChanged.next(this.query)
     }
 
     findNext (incremental = false): void {
@@ -64,5 +71,9 @@ export class SearchPanelComponent {
         this.config.store.terminal.searchOptions.wholeWord = this.options.wholeWord
 
         this.config.save()
+    }
+
+    ngOnDestroy (): void {
+        this.queryChanged.complete()
     }
 }

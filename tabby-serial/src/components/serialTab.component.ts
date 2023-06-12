@@ -2,22 +2,19 @@
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker'
 import colors from 'ansi-colors'
 import { Component, Injector } from '@angular/core'
-import { first } from 'rxjs'
-import { GetRecoveryTokenOptions, Platform, SelectorService } from 'tabby-core'
-import { BaseTerminalTabComponent } from 'tabby-terminal'
+import { Platform, SelectorService } from 'tabby-core'
+import { BaseTerminalTabComponent, ConnectableTerminalTabComponent } from 'tabby-terminal'
 import { SerialSession, BAUD_RATES, SerialProfile } from '../api'
 
 /** @hidden */
 @Component({
     selector: 'serial-tab',
     template: `${BaseTerminalTabComponent.template} ${require('./serialTab.component.pug')}`,
-    styles: [require('./serialTab.component.scss'), ...BaseTerminalTabComponent.styles],
+    styleUrls: ['./serialTab.component.scss', ...BaseTerminalTabComponent.styles],
     animations: BaseTerminalTabComponent.animations,
 })
-export class SerialTabComponent extends BaseTerminalTabComponent {
-    profile?: SerialProfile
+export class SerialTabComponent extends ConnectableTerminalTabComponent<SerialProfile> {
     session: SerialSession|null = null
-    serialPort: any
     Platform = Platform
 
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
@@ -30,8 +27,6 @@ export class SerialTabComponent extends BaseTerminalTabComponent {
     }
 
     ngOnInit () {
-        this.logger = this.log.create('terminalTab')
-
         this.subscribeUntilDestroyed(this.hotkeys.hotkey$, hotkey => {
             if (!this.hasFocus) {
                 return
@@ -49,22 +44,15 @@ export class SerialTabComponent extends BaseTerminalTabComponent {
             }
         })
 
-        this.frontendReady$.pipe(first()).subscribe(() => {
-            this.initializeSession()
-        })
-
         super.ngOnInit()
 
         setImmediate(() => {
-            this.setTitle(this.profile!.name)
+            this.setTitle(this.profile.name)
         })
     }
 
     async initializeSession () {
-        if (!this.profile) {
-            this.logger.error('No serial profile info supplied')
-            return
-        }
+        super.initializeSession()
 
         const session = new SerialSession(this.injector, this.profile)
         this.setSession(session)
@@ -88,29 +76,16 @@ export class SerialTabComponent extends BaseTerminalTabComponent {
             this.write(`\r\n${colors.black.bgWhite(' Serial ')} ${msg}\r\n`)
             this.session?.resize(this.size.columns, this.size.rows)
         })
-        this.attachSessionHandler(this.session!.destroyed$, () => {
-            this.write(this.translate.instant(_('Press any key to reconnect')) + '\r\n')
-            this.input$.pipe(first()).subscribe(() => {
-                if (!this.session?.open) {
-                    this.reconnect()
-                }
-            })
-        })
         super.attachSessionHandlers()
     }
 
-    async getRecoveryToken (options?: GetRecoveryTokenOptions): Promise<any> {
-        return {
-            type: 'app:serial-tab',
-            profile: this.profile,
-            savedState: options?.includeState && this.frontend?.saveState(),
-        }
-    }
+    protected onSessionDestroyed (): void {
+        if (this.frontend) {
+            // Session was closed abruptly
+            this.write('\r\n' + colors.black.bgWhite(' SERIAL ') + ` session closed\r\n`)
 
-    async reconnect (): Promise<void> {
-        this.session?.destroy()
-        await this.initializeSession()
-        this.session?.releaseInitialDataBuffer()
+            super.onSessionDestroyed()
+        }
     }
 
     async changeBaudRate () {
@@ -120,7 +95,13 @@ export class SerialTabComponent extends BaseTerminalTabComponent {
                 name: x.toString(), result: x,
             })),
         )
-        this.serialPort.update({ baudRate: rate })
-        this.profile!.options.baudrate = rate
+        this.session?.serial?.update({ baudRate: rate })
+        this.profile.options.baudrate = rate
+    }
+
+    protected isSessionExplicitlyTerminated (): boolean {
+        return super.isSessionExplicitlyTerminated() ||
+        this.recentInputs.endsWith('close\r') ||
+        this.recentInputs.endsWith('quit\r')
     }
 }

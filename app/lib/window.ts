@@ -125,7 +125,11 @@ export class Window {
         })
 
         this.window.on('blur', () => {
-            if ((this.configStore.appearance?.dock ?? 'off') !== 'off' && this.configStore.appearance?.dockHideOnBlur) {
+            if (
+                (this.configStore.appearance?.dock ?? 'off') !== 'off' &&
+                this.configStore.appearance?.dockHideOnBlur &&
+                !BrowserWindow.getFocusedWindow()
+            ) {
                 this.hide()
             }
         })
@@ -413,7 +417,9 @@ export class Window {
             this.touchBarControl.selectedIndex = selectedIndex
         })
 
-        this.window.webContents.on('new-window', event => event.preventDefault())
+        this.window.webContents.setWindowOpenHandler(() => {
+            return { action: 'deny' }
+        })
 
         ipcMain.on('window-set-disable-vibrancy-while-dragging', (_event, value) => {
             this.disableVibrancyWhileDragging = value && this.configStore.hacks?.disableVibrancyWhileDragging

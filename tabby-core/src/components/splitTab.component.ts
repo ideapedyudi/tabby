@@ -186,7 +186,7 @@ export type SplitDropZoneInfo = {
         >
         </split-tab-pane-label>
     `,
-    styles: [require('./splitTab.component.scss')],
+    styleUrls: ['./splitTab.component.scss'],
 })
 export class SplitTabComponent extends BaseTabComponent implements AfterViewInit, OnDestroy {
     static DIRECTIONS: SplitDirection[] = ['t', 'r', 'b', 'l']
@@ -458,12 +458,18 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
             tab.destroy()
         }
 
+        let allTabs: BaseTabComponent[] = []
         if (thing instanceof BaseTabComponent) {
-            if (thing.parent instanceof SplitTabComponent) {
-                thing.parent.removeTab(thing)
+            allTabs = [thing]
+        } else if (thing instanceof SplitContainer) {
+            allTabs = thing.getAllTabs()
+        }
+        for (const tab of allTabs) {
+            if (tab.parent instanceof SplitTabComponent) {
+                tab.parent.removeTab(tab)
             }
-            thing.removeFromContainer()
-            thing.parent = this
+            tab.removeFromContainer()
+            tab.parent = this
         }
 
         let target = relative ? this.getParentOf(relative) : null
@@ -781,7 +787,7 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
     }
 
     get icon (): string|null {
-        return this.getFocusedTab()?.icon ?? null
+        return this.getFocusedTab()?.icon ?? this.getAllTabs()[0]?.icon ?? null
     }
 
     set icon (icon: string|null) {
@@ -791,7 +797,7 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
     }
 
     get color (): string|null {
-        return this.getFocusedTab()?.color ?? null
+        return this.getFocusedTab()?.color ?? this.getAllTabs()[0]?.color ?? null
     }
 
     set color (color: string|null) {

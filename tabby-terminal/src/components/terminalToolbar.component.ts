@@ -6,11 +6,11 @@ import { BaseTerminalTabComponent } from '../api/baseTerminalTab.component'
 /** @hidden */
 @Component({
     selector: 'terminal-toolbar',
-    template: require('./terminalToolbar.component.pug'),
-    styles: [require('./terminalToolbar.component.scss')],
+    templateUrl: './terminalToolbar.component.pug',
+    styleUrls: ['./terminalToolbar.component.scss'],
 })
 export class TerminalToolbarComponent {
-    @Input() tab: BaseTerminalTabComponent
+    @Input() tab: BaseTerminalTabComponent<any>
 
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor (
@@ -29,7 +29,7 @@ export class TerminalToolbarComponent {
     }
 
     get shouldShowDragHandle (): boolean {
-        return this.tab.parent instanceof SplitTabComponent && this.tab.parent.getAllTabs().length > 1
+        return this.tab.topmostParent instanceof SplitTabComponent && this.tab.topmostParent.getAllTabs().length > 1
     }
 
     @HostListener('mouseenter') onMouseEnter () {

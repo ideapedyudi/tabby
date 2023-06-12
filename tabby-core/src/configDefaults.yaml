@@ -18,11 +18,13 @@ appearance:
   vibrancy: false
   vibrancyType: 'blur'
   lastTabClosesWindow: false
+  spaciness: 1
 terminal:
   showBuiltinProfiles: true
   showRecentProfiles: 3
   paneResizeStep: 0.1
   focusFollowsMouse: false
+  identification: null
 hotkeys:
   profile:
     __nonStructural: true
@@ -44,6 +46,9 @@ vault: null
 encrypted: false
 enableExperimentalFeatures: false
 pluginBlacklist: []
+commandBlacklist: []
+providerBlacklist: []
+profileBlacklist: []
 hacks:
   disableGPU: false
   disableVibrancyWhileDragging: false

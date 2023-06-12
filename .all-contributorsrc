@@ -8,6 +8,7 @@
     "README.de-DE.md",
     "README.id-ID.md",
     "README.ja-JP.md",
+    "README.pt-BR.md",
     "README.es-ES.md"
   ],
   "imageSize": 100,
@@ -1027,7 +1028,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/36803521?v=4",
       "profile": "https://github.com/wkricowski",
       "contributions": [
-        "financial"
+        "financial",
+        "doc"
       ]
     },
     {
@@ -1062,6 +1064,123 @@
       "name": "hermitpopcorn",
       "avatar_url": "https://avatars.githubusercontent.com/u/16042129?v=4",
       "profile": "https://github.com/hermitpopcorn",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "joshuatz",
+      "name": "Joshua Tzucker",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17817563?v=4",
+      "profile": "https://joshuatz.com/",
+      "contributions": [
+        "financial"
+      ]
+    },
+    {
+      "login": "luxifr",
+      "name": "luxifr",
+      "avatar_url": "https://avatars.githubusercontent.com/u/665715?v=4",
+      "profile": "https://github.com/luxifr",
+      "contributions": [
+        "financial"
+      ]
+    },
+    {
+      "login": "ukulanne",
+      "name": "Anne Summers",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28586666?v=4",
+      "profile": "https://github.com/ukulanne",
+      "contributions": [
+        "financial"
+      ]
+    },
+    {
+      "login": "Clem-Fern",
+      "name": "Clem",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20025949?v=4",
+      "profile": "https://github.com/Clem-Fern",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "elizabeth-dev",
+      "name": "Elizabeth Martín Campos",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13015727?v=4",
+      "profile": "https://github.com/elizabeth-dev",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "siccous",
+      "name": "Tomáš Hruška",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7812885?v=4",
+      "profile": "https://github.com/siccous",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "karaketir16",
+      "name": "Osman Karaketir",
+      "avatar_url": "https://avatars.githubusercontent.com/u/27349806?v=4",
+      "profile": "https://github.com/karaketir16",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "CryptoGnome",
+      "name": "Crypto Gnome",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33667144?v=4",
+      "profile": "https://www.gnomegarden.io/",
+      "contributions": [
+        "financial"
+      ]
+    },
+    {
+      "login": "rbukovansky",
+      "name": "Richard Bukovansky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1004491?v=4",
+      "profile": "https://github.com/rbukovansky",
+      "contributions": [
+        "financial"
+      ]
+    },
+    {
+      "login": "pseudocc",
+      "name": "catlas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/85104110?v=4",
+      "profile": "https://github.com/pseudocc",
+      "contributions": [
+        "financial"
+      ]
+    },
+    {
+      "login": "Kapocsi",
+      "name": "Thomas Kapocsi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84490604?v=4",
+      "profile": "http://kapocsi.ca",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "dylhack",
+      "name": "Dylan Hackworth",
+      "avatar_url": "https://avatars.githubusercontent.com/u/27179786?v=4",
+      "profile": "https://dylhack.dev/",
+      "contributions": [
+        "financial"
+      ]
+    },
+    {
+      "login": "echo304",
+      "name": "Sangboak Lee",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16456651?v=4",
+      "profile": "https://github.com/echo304",
       "contributions": [
         "code"
       ]

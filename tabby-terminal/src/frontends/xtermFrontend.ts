@@ -1,6 +1,6 @@
 import { BehaviorSubject, filter, firstValueFrom, takeUntil } from 'rxjs'
 import { Injector } from '@angular/core'
-import { ConfigService, getCSSFontFamily, HostAppService, HotkeysService, Platform, PlatformService } from 'tabby-core'
+import { ConfigService, getCSSFontFamily, HostAppService, HotkeysService, Platform, PlatformService, ThemesService } from 'tabby-core'
 import { Frontend, SearchOptions, SearchState } from './frontend'
 import { Terminal, ITheme } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
@@ -13,10 +13,7 @@ import { ImageAddon } from 'xterm-addon-image'
 import { CanvasAddon } from 'xterm-addon-canvas'
 import './xterm.css'
 import deepEqual from 'deep-equal'
-import { Attributes } from 'xterm/src/common/buffer/Constants'
-import { AttributeData } from 'xterm/src/common/buffer/AttributeData'
-import { CellData } from 'xterm/src/common/buffer/CellData'
-import sixelWorkerScript from 'xterm-addon-image/lib/xterm-addon-image-worker.js'
+import { BaseTerminalProfile, TerminalColorScheme } from '../api/interfaces'
 
 const COLOR_NAMES = [
     'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white',
@@ -72,6 +69,7 @@ export class XTermFrontend extends Frontend {
     private resizeHandler: () => void
     private configuredTheme: ITheme = {}
     private copyOnSelect = false
+    private preventNextOnSelectionChangeEvent = false
     private search = new SearchAddon()
     private searchState: SearchState = { resultCount: 0 }
     private fitAddon = new FitAddon()
@@ -87,6 +85,7 @@ export class XTermFrontend extends Frontend {
     private hotkeysService: HotkeysService
     private platformService: PlatformService
     private hostApp: HostAppService
+    private themes: ThemesService
 
     constructor (injector: Injector) {
         super(injector)
@@ -94,6 +93,7 @@ export class XTermFrontend extends Frontend {
         this.hotkeysService = injector.get(HotkeysService)
         this.platformService = injector.get(PlatformService)
         this.hostApp = injector.get(HostAppService)
+        this.themes = injector.get(ThemesService)
 
         this.xterm = new Terminal({
             allowTransparency: true,
@@ -117,8 +117,11 @@ export class XTermFrontend extends Frontend {
             this.title.next(title)
         })
         this.xterm.onSelectionChange(() => {
-            if (this.copyOnSelect && this.getSelection()) {
-                this.copySelection()
+            if (this.getSelection()) {
+                if (this.copyOnSelect && !this.preventNextOnSelectionChangeEvent) {
+                    this.copySelection()
+                }
+                this.preventNextOnSelectionChangeEvent = false
             }
         })
         this.xterm.onBell(() => {
@@ -131,14 +134,7 @@ export class XTermFrontend extends Frontend {
         this.xterm.unicode.activeVersion = '11'
 
         if (this.configService.store.terminal.sixel) {
-            this.xterm.loadAddon(new ImageAddon(
-                URL.createObjectURL(
-                    new Blob(
-                        [sixelWorkerScript],
-                        { type: 'application/javascript' },
-                    ),
-                ),
-            ))
+            this.xterm.loadAddon(new ImageAddon())
         }
 
         const keyboardEventHandler = (name: string, event: KeyboardEvent) => {
@@ -222,7 +218,7 @@ export class XTermFrontend extends Frontend {
         })
     }
 
-    async attach (host: HTMLElement): Promise<void> {
+    async attach (host: HTMLElement, profile: BaseTerminalProfile): Promise<void> {
         this.element = host
 
         this.xterm.open(host)
@@ -232,7 +228,7 @@ export class XTermFrontend extends Frontend {
         await new Promise(resolve => setTimeout(resolve, this.hostApp.platform === Platform.Web ? 1000 : 0))
 
         // Just configure the colors to avoid a flash
-        this.configureColors()
+        this.configureColors(profile.terminalColorScheme)
 
         if (this.enableWebGL) {
             this.webGLAddon = new WebglAddon()
@@ -361,29 +357,31 @@ export class XTermFrontend extends Frontend {
         this.xtermCore._scrollToBottom()
     }
 
-    private configureColors () {
+    private configureColors (scheme: TerminalColorScheme|undefined): void {
         const config = this.configService.store
 
+        scheme = scheme ?? config.terminal.colorScheme
+
         const theme: ITheme = {
-            foreground: config.terminal.colorScheme.foreground,
-            selectionBackground: config.terminal.colorScheme.selection || '#88888888',
-            selectionForeground: config.terminal.colorScheme.selectionForeground || undefined,
-            background: config.terminal.background === 'colorScheme' ? config.terminal.colorScheme.background : '#00000000',
-            cursor: config.terminal.colorScheme.cursor,
-            cursorAccent: config.terminal.colorScheme.cursorAccent,
+            foreground: scheme!.foreground,
+            selectionBackground: scheme!.selection ?? '#88888888',
+            selectionForeground: scheme!.selectionForeground ?? undefined,
+            background: !this.themes.findCurrentTheme().followsColorScheme && config.terminal.background === 'colorScheme' ? scheme!.background : '#00000000',
+            cursor: scheme!.cursor,
+            cursorAccent: scheme!.cursorAccent,
         }
 
         for (let i = 0; i < COLOR_NAMES.length; i++) {
-            theme[COLOR_NAMES[i]] = config.terminal.colorScheme.colors[i]
+            theme[COLOR_NAMES[i]] = scheme!.colors[i]
         }
 
-        if (this.xtermCore._colorManager && !deepEqual(this.configuredTheme, theme)) {
+        if (!deepEqual(this.configuredTheme, theme)) {
             this.xterm.options.theme = theme
             this.configuredTheme = theme
         }
     }
 
-    configure (): void {
+    configure (profile: BaseTerminalProfile): void {
         const config = this.configService.store
 
         setImmediate(() => {
@@ -416,7 +414,7 @@ export class XTermFrontend extends Frontend {
 
         this.copyOnSelect = config.terminal.copyOnSelect
 
-        this.configureColors()
+        this.configureColors(profile.terminalColorScheme)
 
         if (this.opened && config.terminal.ligatures && !this.ligaturesAddon && this.hostApp.platform !== Platform.Web) {
             this.ligaturesAddon = new LigaturesAddon()
@@ -450,12 +448,18 @@ export class XTermFrontend extends Frontend {
     }
 
     findNext (term: string, searchOptions?: SearchOptions): SearchState {
+        if (this.copyOnSelect) {
+            this.preventNextOnSelectionChangeEvent = true
+        }
         return this.wrapSearchResult(
             this.search.findNext(term, this.getSearchOptions(searchOptions)),
         )
     }
 
     findPrevious (term: string, searchOptions?: SearchOptions): SearchState {
+        if (this.copyOnSelect) {
+            this.preventNextOnSelectionChangeEvent = true
+        }
         return this.wrapSearchResult(
             this.search.findPrevious(term, this.getSearchOptions(searchOptions)),
         )
@@ -490,65 +494,12 @@ export class XTermFrontend extends Frontend {
         const scale = Math.pow(1.1, this.zoom)
         this.xterm.options.fontSize = this.configuredFontSize * scale
         // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-        this.xterm.options.lineHeight = Math.max(1, (this.configuredFontSize + this.configuredLinePadding * 2) / this.configuredFontSize * scale)
+        this.xterm.options.lineHeight = Math.max(1, (this.configuredFontSize + this.configuredLinePadding * 2) / this.configuredFontSize)
         this.resizeHandler()
     }
 
     private getSelectionAsHTML (): string {
-        let html = `<div style="font-family: '${this.configService.store.terminal.font}', monospace; white-space: pre">`
-        const selection = this.xterm.getSelectionPosition()
-        if (!selection) {
-            return ''
-        }
-        if (selection.start.y === selection.end.y) {
-            html += this.getLineAsHTML(selection.start.y, selection.start.x, selection.end.x)
-        } else {
-            html += this.getLineAsHTML(selection.start.y, selection.start.x, this.xterm.cols)
-            for (let y = selection.start.y + 1; y < selection.end.y; y++) {
-                html += this.getLineAsHTML(y, 0, this.xterm.cols)
-            }
-            html += this.getLineAsHTML(selection.end.y, 0, selection.end.x)
-        }
-        html += '</div>'
-        return html
-    }
-
-    private getHexColor (mode: number, color: number, def: string): string {
-        if (mode === Attributes.CM_RGB) {
-            const rgb = AttributeData.toColorRGB(color)
-            return rgb.map(x => x.toString(16).padStart(2, '0')).join('')
-        }
-        if (mode === Attributes.CM_P16 || mode === Attributes.CM_P256) {
-            return this.configService.store.terminal.colorScheme.colors[color]
-        }
-        return def
-    }
-
-    private getLineAsHTML (y: number, start: number, end: number): string {
-        let html = '<div>'
-        let lastStyle: string|null = null
-        const outerLine = this.xterm.buffer.active.getLine(y)
-        if (!outerLine) {
-            return ''
-        }
-        const line = outerLine['_line']
-        const cell = new CellData()
-        for (let i = start; i < end; i++) {
-            line.loadCell(i, cell)
-            const fg = this.getHexColor(cell.getFgColorMode(), cell.getFgColor(), this.configService.store.terminal.colorScheme.foreground)
-            const bg = this.getHexColor(cell.getBgColorMode(), cell.getBgColor(), this.configService.store.terminal.colorScheme.background)
-            const style = `color: ${fg}; background: ${bg}; font-weight: ${cell.isBold() ? 'bold' : 'normal'}; font-style: ${cell.isItalic() ? 'italic' : 'normal'}; text-decoration: ${cell.isUnderline() ? 'underline' : 'none'}`
-            if (style !== lastStyle) {
-                if (lastStyle !== null) {
-                    html += '</span>'
-                }
-                html += `<span style="${style}">`
-                lastStyle = style
-            }
-            html += line.getString(i) || ' '
-        }
-        html += '</span></div>'
-        return html
+        return this.serializeAddon.serializeAsHTML({ includeGlobalBackground: true, onlySelection: true  })
     }
 }
 

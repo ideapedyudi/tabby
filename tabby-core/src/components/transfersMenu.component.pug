@@ -1,17 +1,12 @@
 .d-flex.align-items-center
     .dropdown-header(translate) File transfers
-    button.btn.btn-link.ml-auto((click)='removeAll(); $event.stopPropagation()') !{require('../icons/times.svg')}
+    button.btn.btn-link.ms-auto((click)='removeAll(); $event.stopPropagation()') !{require('../icons/times.svg')}
 .transfer(*ngFor='let transfer of transfers', (click)='showTransfer(transfer)')
     .icon(*ngIf='isDownload(transfer)') !{require('../icons/download.svg')}
     .icon(*ngIf='!isDownload(transfer)') !{require('../icons/upload.svg')}
     .main
         label.no-wrap([title]='transfer.getName()') {{transfer.getName()}}
-        .status(*ngIf='transfer.isComplete()')
-            ngb-progressbar(type='success', [value]='100')
-        .status(*ngIf='transfer.isCancelled()')
-            ngb-progressbar(type='danger', [value]='100')
-        .status(*ngIf='!transfer.isComplete() && !transfer.isCancelled()')
-            ngb-progressbar(type='info', [value]='getProgress(transfer)')
+        ngb-progressbar([type]='transfer.isComplete() ? "success" : transfer.isCancelled() ? "danger" : "info"', [value]='getProgress(transfer)')
         .metadata
             .size {{transfer.getSize()|filesize}}
             .speed(*ngIf='transfer.getSpeed()') {{transfer.getSpeed()|filesize}}/s

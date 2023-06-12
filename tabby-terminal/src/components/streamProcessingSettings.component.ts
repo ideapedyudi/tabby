@@ -6,7 +6,7 @@ import { StreamProcessingOptions } from '../middleware/streamProcessing'
 /** @hidden */
 @Component({
     selector: 'stream-processing-settings',
-    template: require('./streamProcessingSettings.component.pug'),
+    templateUrl: './streamProcessingSettings.component.pug',
 })
 export class StreamProcessingSettingsComponent {
     @Input() options: StreamProcessingOptions
@@ -59,5 +59,13 @@ export class StreamProcessingSettingsComponent {
 
     getOutputModeName (key) {
         return this.outputModes.find(x => x.key === key)?.name
+    }
+
+    setInputMode (mode) {
+        this.options.inputMode = mode
+    }
+
+    setOutputMode (mode) {
+        this.options.outputMode = mode
     }
 }

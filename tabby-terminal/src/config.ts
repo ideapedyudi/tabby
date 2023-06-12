@@ -1,4 +1,5 @@
 import { ConfigProvider, Platform } from 'tabby-core'
+import { DefaultColorSchemes } from './colorSchemes'
 
 /** @hidden */
 export class TerminalConfigProvider extends ConfigProvider {
@@ -32,30 +33,9 @@ export class TerminalConfigProvider extends ConfigProvider {
             wordSeparator: ' ()[]{}\'"',
             colorScheme: {
                 __nonStructural: true,
-                name: 'Material',
-                foreground: '#eceff1',
-                background: 'rgba(38, 50, 56, 1)',
                 selection: null,
-                cursor: '#FFCC00',
                 cursorAccent: null,
-                colors: [
-                    '#000000',
-                    '#D62341',
-                    '#9ECE58',
-                    '#FAED70',
-                    '#396FE2',
-                    '#BB80B3',
-                    '#2DDAFD',
-                    '#d0d0d0',
-                    'rgba(255, 255, 255, 0.2)',
-                    '#FF5370',
-                    '#C3E88D',
-                    '#FFCB6B',
-                    '#82AAFF',
-                    '#C792EA',
-                    '#89DDFF',
-                    '#ffffff',
-                ],
+                ...DefaultColorSchemes.defaultColorScheme,
             },
             customColorSchemes: [],
             warnOnMultilinePaste: true,

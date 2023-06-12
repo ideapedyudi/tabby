@@ -30,13 +30,12 @@ import { SerialProfilesService } from './profiles'
         { provide: TabRecoveryProvider, useClass: RecoveryProvider, multi: true },
         { provide: HotkeyProvider, useClass: SerialHotkeyProvider, multi: true },
     ],
-    entryComponents: [
-        SerialProfileSettingsComponent,
-        SerialTabComponent,
-    ],
     declarations: [
         SerialProfileSettingsComponent,
         SerialTabComponent,
     ],
 })
 export default class SerialModule { } // eslint-disable-line @typescript-eslint/no-extraneous-class
+
+export { SerialTabComponent }
+export { SerialSession } from './api'

@@ -23,12 +23,11 @@ ul.nav-tabs(ngbNav, #nav='ngbNav')
 
             .d-flex.mb-3
                 .input-group
-                    .input-group-prepend
-                        .input-group-text
-                            i.fas.fa-fw.fa-search
+                    .input-group-text
+                        i.fas.fa-fw.fa-search
                     input.form-control(type='search', [placeholder]='"Filter"|translate', [(ngModel)]='filter')
 
-                button.btn.btn-primary.flex-shrink-0.ml-3((click)='newProfile()')
+                button.btn.btn-primary.flex-shrink-0.ms-3((click)='newProfile()')
                     i.fas.fa-fw.fa-plus
                     span(translate) New profile
 
@@ -40,20 +39,20 @@ ul.nav-tabs(ngbNav, #nav='ngbNav')
                         )
                             .fa.fa-fw.fa-chevron-right(*ngIf='group.collapsed')
                             .fa.fa-fw.fa-chevron-down(*ngIf='!group.collapsed')
-                            span.ml-3.mr-auto {{group.name || ("Ungrouped"|translate)}}
-                            button.btn.btn-sm.btn-link.hover-reveal.ml-2(
+                            span.ms-3.me-auto {{group.name || ("Ungrouped"|translate)}}
+                            button.btn.btn-sm.btn-link.hover-reveal.ms-2(
                                 *ngIf='group.editable && group.name',
                                 (click)='$event.stopPropagation(); editGroup(group)'
                             )
                                 i.fas.fa-pencil-alt
-                            button.btn.btn-sm.btn-link.hover-reveal.ml-2(
+                            button.btn.btn-sm.btn-link.hover-reveal.ms-2(
                                 *ngIf='group.editable && group.name',
                                 (click)='$event.stopPropagation(); deleteGroup(group)'
                             )
                                 i.fas.fa-trash-alt
                         ng-container(*ngIf='!group.collapsed')
                             ng-container(*ngFor='let profile of group.profiles')
-                                .list-group-item.pl-5.d-flex.align-items-center(
+                                .list-group-item.ps-5.d-flex.align-items-center(
                                     *ngIf='isProfileVisible(profile)',
                                     [class.list-group-item-action]='!profile.isBuiltin',
                                     (click)='profile.isBuiltin ? null : editProfile(profile)'
@@ -64,23 +63,53 @@ ul.nav-tabs(ngbNav, #nav='ngbNav')
                                     )
 
                                     .no-wrap {{profile.name}}
-                                    .text-muted.no-wrap.ml-2 {{getDescription(profile)}}
+                                    .text-muted.no-wrap.ms-2 {{getDescription(profile)}}
 
-                                    .mr-auto
+                                    .me-auto
 
-                                    button.btn.btn-link.hover-reveal.ml-1((click)='$event.stopPropagation(); launchProfile(profile)')
+                                    button.btn.btn-link.hover-reveal.ms-1((click)='$event.stopPropagation(); launchProfile(profile)')
                                         i.fas.fa-play
 
-                                    button.btn.btn-link.hover-reveal.ml-1((click)='$event.stopPropagation(); newProfile(profile)')
-                                        i.fas.fa-copy
+                                    .ms-1.hover-reveal(ngbDropdown, placement='bottom-right top-right auto')
+                                        button.btn.btn-link.ms-1(
+                                            ngbDropdownToggle,
+                                            (click)='$event.stopPropagation()'
+                                        )
+                                            i.fas.fa-fw.fa-ellipsis-vertical
+                                        div(ngbDropdownMenu)
+                                            button.dropdown-item(
+                                                ngbDropdownItem,
+                                                (click)='$event.stopPropagation(); newProfile(profile)'
+                                            )
+                                                i.fas.fa-fw.fa-copy
+                                                span(translate) Duplicate
 
-                                    button.btn.btn-link.hover-reveal.ml-1(
-                                        *ngIf='!profile.isBuiltin',
-                                        (click)='$event.stopPropagation(); deleteProfile(profile)'
-                                    )
-                                        i.fas.fa-trash-alt
+                                            button.dropdown-item(
+                                                ngbDropdownItem,
+                                                *ngIf='profile.id && !isProfileBlacklisted(profile)',
+                                                (click)='$event.stopPropagation(); blacklistProfile(profile)'
+                                            )
+                                                i.fas.fa-fw.fa-eye-slash
+                                                span(translate) Hide
 
-                                    .ml-1(class='badge badge-{{getTypeColorClass(profile)}}') {{getTypeLabel(profile)}}
+                                            button.dropdown-item(
+                                                ngbDropdownItem,
+                                                *ngIf='profile.id && isProfileBlacklisted(profile)',
+                                                (click)='$event.stopPropagation(); unblacklistProfile(profile)'
+                                            )
+                                                i.fas.fa-fw.fa-eye
+                                                span(translate) Show
+
+                                            button.dropdown-item(
+                                                *ngIf='!profile.isBuiltin',
+                                                (click)='$event.stopPropagation(); deleteProfile(profile)'
+                                            )
+                                                i.fas.fa-fw.fa-trash-alt
+                                                span(translate) Delete
+
+                                    .ms-1(class='badge text-bg-{{getTypeColorClass(profile)}}') {{getTypeLabel(profile)}}
+
+                                    .ms-1.text-danger.fas.fa-eye-slash(*ngIf='isProfileBlacklisted(profile)')
 
     li(ngbNavItem)
         a(ngbNavLink, translate) Advanced
@@ -107,6 +136,18 @@ ul.nav-tabs(ngbNav, #nav='ngbNav')
                     [(ngModel)]='config.store.terminal.showBuiltinProfiles',
                     (ngModelChange)='config.save()'
                 )
+
+            .form-line.content-box(*ngIf='hostApp.platform === Platform.Windows')
+                .header
+                    .title(translate) Terminal identification
+                    .description(translate) How Tabby presents itself through environment vars
+
+                select.form-control(
+                    [(ngModel)]='config.store.terminal.identification',
+                    (ngModelChange)='config.save()',
+                )
+                    option(ngValue='wt', translation) Windows Terminal
+                    option(ngValue='cygwin', translation) Cygwin
 
             .form-line.content-box
                 .header

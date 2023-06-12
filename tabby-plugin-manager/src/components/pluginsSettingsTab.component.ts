@@ -15,8 +15,8 @@ _('Search plugins')
 
 /** @hidden */
 @Component({
-    template: require('./pluginsSettingsTab.component.pug'),
-    styles: [require('./pluginsSettingsTab.component.scss')],
+    templateUrl: './pluginsSettingsTab.component.pug',
+    styleUrls: ['./pluginsSettingsTab.component.scss'],
 })
 export class PluginsSettingsTabComponent {
     BusyState = BusyState
@@ -32,6 +32,8 @@ export class PluginsSettingsTabComponent {
     @HostBinding('class.content-box') true
 
     installedPlugins$: PluginInfo[] = []
+    installedFilter = ''
+    availableFilter = ''
 
     constructor (
         private config: ConfigService,
