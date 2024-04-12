@@ -70,6 +70,7 @@ export class PluginManagerService {
             map(plugins => {
                 const mapping: Record<string, PluginInfo[]> = {}
                 for (const p of plugins) {
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     mapping[p.name] ??= []
                     mapping[p.name].push(p)
                 }

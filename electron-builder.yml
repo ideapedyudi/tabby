@@ -3,8 +3,6 @@ appId: org.tabby
 productName: Tabby
 compression: normal
 npmRebuild: false
-afterSign: "./build/mac/afterSignHook.cjs"
-afterAllArtifactBuild: "./build/mac/afterBuildHook.cjs"
 files:
 - '**/*'
 - dist
@@ -78,8 +76,6 @@ snap:
   - system-observe
 deb:
   depends:
-  - gconf2
-  - gconf-service
   - gnome-keyring
   - libnotify4
   - libsecret-1-0

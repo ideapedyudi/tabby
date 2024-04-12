@@ -3,10 +3,10 @@ import { SerialPortStream } from '@serialport/stream'
 import { LogService, NotificationsService } from 'tabby-core'
 import { Subject, Observable } from 'rxjs'
 import { Injector, NgZone } from '@angular/core'
-import { BaseSession, BaseTerminalProfile, LoginScriptsOptions, SessionMiddleware, StreamProcessingOptions, TerminalStreamProcessor, UTF8SplitterMiddleware } from 'tabby-terminal'
+import { BaseSession, ConnectableTerminalProfile, InputProcessingOptions, InputProcessor, LoginScriptsOptions, SessionMiddleware, StreamProcessingOptions, TerminalStreamProcessor, UTF8SplitterMiddleware } from 'tabby-terminal'
 import { SerialService } from './services/serial.service'
 
-export interface SerialProfile extends BaseTerminalProfile {
+export interface SerialProfile extends ConnectableTerminalProfile {
     options: SerialProfileOptions
 }
 
@@ -21,6 +21,7 @@ export interface SerialProfileOptions extends StreamProcessingOptions, LoginScri
     xoff?: boolean
     xany?: boolean
     slowSend?: boolean
+    input: InputProcessingOptions,
 }
 
 export const BAUD_RATES = [
@@ -65,6 +66,7 @@ export class SerialSession extends BaseSession {
         }
 
         this.middleware.push(new UTF8SplitterMiddleware())
+        this.middleware.push(new InputProcessor(profile.options.input))
 
         this.setLoginScriptsOptions(profile.options)
     }

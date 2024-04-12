@@ -3,6 +3,7 @@ import { Component, HostBinding } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { BaseComponent, VaultService, VaultSecret, Vault, PlatformService, ConfigService, VAULT_SECRET_TYPE_FILE, PromptModalComponent, VaultFileSecret, TranslateService } from 'tabby-core'
 import { SetVaultPassphraseModalComponent } from './setVaultPassphraseModal.component'
+import { ShowSecretModalComponent } from './showSecretModal.component'
 
 
 /** @hidden */
@@ -35,9 +36,11 @@ export class VaultSettingsTabComponent extends BaseComponent {
 
     async enableVault () {
         const modal = this.ngbModal.open(SetVaultPassphraseModalComponent)
-        const newPassphrase = await modal.result
-        await this.vault.setEnabled(true, newPassphrase)
-        this.vaultContents = await this.vault.load(newPassphrase)
+        const newPassphrase = await modal.result.catch(() => null)
+        if (newPassphrase) {
+            await this.vault.setEnabled(true, newPassphrase)
+            this.vaultContents = await this.vault.load(newPassphrase)
+        }
     }
 
     async disableVault () {
@@ -65,8 +68,10 @@ export class VaultSettingsTabComponent extends BaseComponent {
             return
         }
         const modal = this.ngbModal.open(SetVaultPassphraseModalComponent)
-        const newPassphrase = await modal.result
-        this.vault.save(this.vaultContents, newPassphrase)
+        const newPassphrase = await modal.result.catch(() => null)
+        if (newPassphrase) {
+            this.vault.save(this.vaultContents, newPassphrase)
+        }
     }
 
     async toggleConfigEncrypted () {
@@ -91,6 +96,16 @@ export class VaultSettingsTabComponent extends BaseComponent {
             return this.translate.instant('File: {description}', (secret as VaultFileSecret).key)
         }
         return this.translate.instant('Unknown secret of type {type} for {key}', { type: secret.type, key: JSON.stringify(secret.key) })
+    }
+
+    showSecret (secret: VaultSecret) {
+        if (!this.vaultContents) {
+            return
+        }
+        const modal = this.ngbModal.open(ShowSecretModalComponent)
+        modal.componentInstance.title = this.getSecretLabel(secret)
+        modal.componentInstance.secret = secret
+
     }
 
     removeSecret (secret: VaultSecret) {
@@ -118,7 +133,7 @@ export class VaultSettingsTabComponent extends BaseComponent {
         modal.componentInstance.prompt = this.translate.instant('New name')
         modal.componentInstance.value = secret.key.description
 
-        const description = (await modal.result)?.value
+        const description = (await modal.result.catch(() => null))?.value
         if (!description) {
             return
         }

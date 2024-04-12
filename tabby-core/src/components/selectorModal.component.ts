@@ -18,45 +18,58 @@ export class SelectorModalComponent<T> {
     @Input() selectedIndex = 0
     hasGroups = false
     @ViewChildren('item') itemChildren: QueryList<ElementRef>
+    private preventEdit: boolean
 
-    constructor (
-        public modalInstance: NgbActiveModal,
-    ) { }
+    constructor (public modalInstance: NgbActiveModal) {
+        this.preventEdit = false
+    }
 
     ngOnInit (): void {
         this.onFilterChange()
         this.hasGroups = this.options.some(x => x.group)
     }
 
-    @HostListener('keydown', ['$event']) onKeyUp (event: KeyboardEvent): void {
-        if (event.key === 'PageUp' || event.key === 'ArrowUp' && event.metaKey) {
-            this.selectedIndex -= 10
-            event.preventDefault()
-        } else if (event.key === 'PageDown' || event.key === 'ArrowDown' && event.metaKey) {
-            this.selectedIndex += 10
-            event.preventDefault()
-        } else if (event.key === 'ArrowUp') {
-            this.selectedIndex--
-            event.preventDefault()
-        } else if (event.key === 'ArrowDown') {
-            this.selectedIndex++
-            event.preventDefault()
-        } else if (event.key === 'Enter') {
-            this.selectOption(this.filteredOptions[this.selectedIndex])
-        } else if (event.key === 'Escape') {
+    @HostListener('keydown', ['$event']) onKeyDown (event: KeyboardEvent): void {
+        if (event.key === 'Escape') {
             this.close()
-        }
-        if (event.key === 'Backspace' && this.canEditSelected()) {
-            event.preventDefault()
-            this.filter = this.filteredOptions[this.selectedIndex].freeInputEquivalent!
-            this.onFilterChange()
-        }
+        } else if (this.filteredOptions.length > 0) {
+            if (event.key === 'PageUp' || event.key === 'ArrowUp' && event.metaKey) {
+                this.selectedIndex -= Math.min(10, Math.max(1, this.selectedIndex))
+                event.preventDefault()
+            } else if (event.key === 'PageDown' || event.key === 'ArrowDown' && event.metaKey) {
+                this.selectedIndex += Math.min(10, Math.max(1, this.filteredOptions.length - this.selectedIndex - 1))
+                event.preventDefault()
+            } else if (event.key === 'ArrowUp') {
+                this.selectedIndex--
+                event.preventDefault()
+            } else if (event.key === 'ArrowDown') {
+                this.selectedIndex++
+                event.preventDefault()
+            } else if (event.key === 'Enter') {
+                this.selectOption(this.filteredOptions[this.selectedIndex])
+            } else if (event.key === 'Backspace' && !this.preventEdit) {
+                if (this.canEditSelected()) {
+                    event.preventDefault()
+                    this.filter = this.filteredOptions[this.selectedIndex].freeInputEquivalent!
+                    this.onFilterChange()
+                } else {
+                    this.preventEdit = true
+                }
+            }
 
-        this.selectedIndex = (this.selectedIndex + this.filteredOptions.length) % this.filteredOptions.length
-        Array.from(this.itemChildren)[this.selectedIndex]?.nativeElement.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest',
-        })
+            this.selectedIndex = (this.selectedIndex + this.filteredOptions.length) % this.filteredOptions.length
+
+            Array.from(this.itemChildren)[this.selectedIndex]?.nativeElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+            })
+        }
+    }
+
+    @HostListener('keyup', ['$event']) onKeyUp (event: KeyboardEvent): void {
+        if (event.key === 'Backspace' && this.preventEdit) {
+            this.preventEdit = false
+        }
     }
 
     onFilterChange (): void {
@@ -76,10 +89,11 @@ export class SelectorModalComponent<T> {
                 { sort: true },
             ).search(f)
 
-            const freeOption = this.options.find(x => x.freeInputPattern)
-            if (freeOption && !this.filteredOptions.includes(freeOption)) {
-                this.filteredOptions.push(freeOption)
-            }
+            this.options.filter(x => x.freeInputPattern).sort(firstBy<SelectorOption<T>, number>(x => x.weight ?? 0)).forEach(freeOption => {
+                if (!this.filteredOptions.includes(freeOption)) {
+                    this.filteredOptions.push(freeOption)
+                }
+            })
         }
         this.selectedIndex = Math.max(0, this.selectedIndex)
         this.selectedIndex = Math.min(this.filteredOptions.length - 1, this.selectedIndex)

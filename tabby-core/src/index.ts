@@ -37,7 +37,7 @@ import { FastHtmlBindDirective } from './directives/fastHtmlBind.directive'
 import { DropZoneDirective } from './directives/dropZone.directive'
 import { CdkAutoDropGroup } from './directives/cdkAutoDropGroup.directive'
 
-import { Theme, CLIHandler, TabContextMenuItemProvider, TabRecoveryProvider, HotkeyProvider, ConfigProvider, PlatformService, FileProvider, ProfilesService, ProfileProvider, SelectorOption, Profile, SelectorService, CommandProvider } from './api'
+import { Theme, CLIHandler, TabContextMenuItemProvider, TabRecoveryProvider, HotkeyProvider, ConfigProvider, PlatformService, FileProvider, ProfilesService, ProfileProvider, QuickConnectProfileProvider, SelectorOption, Profile, SelectorService, CommandProvider } from './api'
 
 import { AppService } from './services/app.service'
 import { ConfigService } from './services/config.service'
@@ -177,7 +177,7 @@ export default class AppModule { // eslint-disable-line @typescript-eslint/no-ex
             if (hotkey.startsWith('profile.')) {
                 const id = hotkey.substring(hotkey.indexOf('.') + 1)
                 const profiles = await profilesService.getProfiles()
-                const profile = profiles.find(x => AppHotkeyProvider.getProfileHotkeyName(x) === id)
+                const profile = profiles.find(x => ProfilesService.getProfileHotkeyName(x) === id)
                 if (profile) {
                     profilesService.openNewTabForProfile(profile)
                 }
@@ -188,10 +188,10 @@ export default class AppModule { // eslint-disable-line @typescript-eslint/no-ex
                 if (!provider) {
                     return
                 }
-                this.showSelector(provider)
+                this.showSelector(provider).catch(() => null)
             }
             if (hotkey === 'command-selector') {
-                commands.showSelector()
+                commands.showSelector().catch(() => null)
             }
 
             if (hotkey === 'profile-selector') {
@@ -214,11 +214,12 @@ export default class AppModule { // eslint-disable-line @typescript-eslint/no-ex
             callback: () => this.profilesService.openNewTabForProfile(p),
         }))
 
-        if (provider.supportsQuickConnect) {
+        if (provider instanceof QuickConnectProfileProvider) {
             options.push({
                 name: this.translate.instant('Quick connect'),
                 freeInputPattern: this.translate.instant('Connect to "%s"...'),
                 icon: 'fas fa-arrow-right',
+                description: `(${provider.name.toUpperCase()})`,
                 callback: query => {
                     const p = provider.quickConnect(query)
                     if (p) {

@@ -275,6 +275,7 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
             }
         })
         this.blurred$.subscribe(() => this.getAllTabs().forEach(x => x.emitBlurred()))
+        this.visibility$.subscribe(visibility => this.getAllTabs().forEach(x => x.emitVisibility(visibility)))
 
         this.tabAdded$.subscribe(() => this.updateTitle())
         this.tabRemoved$.subscribe(() => this.updateTitle())
@@ -349,7 +350,7 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
                     }
                     break
                 case 'close-pane':
-                    this.removeTab(this.focusedTab)
+                    this.focusedTab.destroy()
                     break
                 case 'pane-increase-vertical':
                     this.resizePane('v')
@@ -470,11 +471,13 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
             }
             tab.removeFromContainer()
             tab.parent = this
+
+            tab.emitVisibility(this.visibility.value)
         }
 
         let target = relative ? this.getParentOf(relative) : null
         if (!target) {
-            // Rewrap the root container just in case the orientation isn't compatibile
+            // Rewrap the root container just in case the orientation isn't compatible
             target = new SplitContainer()
             target.orientation = ['l', 'r'].includes(side) ? 'h' : 'v'
             target.children = [this.root]
@@ -766,10 +769,10 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
     }
 
     destroy (): void {
-        super.destroy()
         for (const x of this.getAllTabs()) {
             x.destroy()
         }
+        super.destroy()
     }
 
     layout (): void {
@@ -840,7 +843,7 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
         tab.subscribeUntilDestroyed(tab.recoveryStateChangedHint$, () => {
             this.recoveryStateChangedHint.next()
         })
-        tab.subscribeUntilDestroyed(tab.destroyed$, () => {
+        tab.destroyed$.subscribe(() => {
             this.removeTab(tab)
         })
     }

@@ -101,7 +101,7 @@ export class CommandService {
             context.tab = tab.getFocusedTab() ?? undefined
         }
         const commands = await this.getCommands(context)
-        await this.selector.show(
+        return this.selector.show(
             this.translate.instant('Commands'),
             commands.map(c => ({
                 name: c.label,

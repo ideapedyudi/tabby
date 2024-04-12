@@ -88,8 +88,18 @@ ul.nav-tabs(ngbNav, #nav='ngbNav')
                 toggle([(ngModel)]='profile.options.slowSend')
 
     li(ngbNavItem)
+        a(ngbNavLink, translate) Colors
+        ng-template(ngbNavContent)
+            color-scheme-selector([(model)]='profile.terminalColorScheme')
+
+    li(ngbNavItem)
         a(ngbNavLink, translate) Login scripts
         ng-template(ngbNavContent)
             login-scripts-settings([options]='profile.options')
+
+    li(ngbNavItem)
+        a(ngbNavLink, translate) Input
+        ng-template(ngbNavContent)
+            input-processing-settings([options]='profile.options.input')
 
 div([ngbNavOutlet]='nav')

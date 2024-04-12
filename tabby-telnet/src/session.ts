@@ -1,19 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import { Socket } from 'net'
 import colors from 'ansi-colors'
 import stripAnsi from 'strip-ansi'
 import { Injector } from '@angular/core'
 import { LogService } from 'tabby-core'
-import { BaseSession, BaseTerminalProfile, LoginScriptsOptions, SessionMiddleware, StreamProcessingOptions, TerminalStreamProcessor } from 'tabby-terminal'
+import { BaseSession, ConnectableTerminalProfile, InputProcessingOptions, InputProcessor, LoginScriptsOptions, SessionMiddleware, StreamProcessingOptions, TerminalStreamProcessor } from 'tabby-terminal'
 import { Subject, Observable } from 'rxjs'
 
 
-export interface TelnetProfile extends BaseTerminalProfile {
+export interface TelnetProfile extends ConnectableTerminalProfile {
     options: TelnetProfileOptions
 }
 
 export interface TelnetProfileOptions extends StreamProcessingOptions, LoginScriptsOptions {
     host: string
     port?: number
+    input: InputProcessingOptions,
 }
 
 enum TelnetCommands {
@@ -66,6 +68,7 @@ export class TelnetSession extends BaseSession {
     private lastWidth = 0
     private lastHeight = 0
     private requestedOptions = new Set<number>()
+    private telnetRemoteEcho = false
 
     constructor (
         injector: Injector,
@@ -74,6 +77,7 @@ export class TelnetSession extends BaseSession {
         super(injector.get(LogService).create(`telnet-${profile.options.host}-${profile.options.port}`))
         this.streamProcessor = new TerminalStreamProcessor(profile.options)
         this.middleware.push(this.streamProcessor)
+        this.middleware.push(new InputProcessor(profile.options.input))
         this.setLoginScriptsOptions(profile.options)
     }
 
@@ -159,7 +163,7 @@ export class TelnetSession extends BaseSession {
                 data = data.slice(3)
                 this.logger.debug('<', commandName || command, optionName || option)
 
-                if (command === TelnetCommands.WILL || command === TelnetCommands.WONT) {
+                if (command === TelnetCommands.WILL || command === TelnetCommands.WONT || command === TelnetCommands.DONT) {
                     if (this.requestedOptions.has(option)) {
                         this.requestedOptions.delete(option)
                         continue
@@ -172,6 +176,11 @@ export class TelnetSession extends BaseSession {
                         TelnetOptions.ECHO,
                     ].includes(option)) {
                         this.emitTelnet(TelnetCommands.DO, option)
+                        if (option === TelnetOptions.ECHO && this.streamProcessor.forceEcho) {
+                            this.telnetRemoteEcho = true
+                            this.streamProcessor.forceEcho = false
+                            this.requestOption(TelnetCommands.WONT, option)
+                        }
                     } else {
                         this.logger.debug('(!) Unhandled option')
                         this.emitTelnet(TelnetCommands.DONT, option)
@@ -182,8 +191,13 @@ export class TelnetSession extends BaseSession {
                         this.emitTelnet(TelnetCommands.WILL, option)
                         this.emitSize()
                     } else if (option === TelnetOptions.ECHO) {
-                        this.streamProcessor.forceEcho = true
-                        this.emitTelnet(TelnetCommands.WILL, option)
+                        if (this.telnetRemoteEcho) {
+                            this.streamProcessor.forceEcho = false
+                            this.emitTelnet(TelnetCommands.WONT, option)
+                        } else {
+                            this.streamProcessor.forceEcho = true
+                            this.emitTelnet(TelnetCommands.WILL, option)
+                        }
                     } else if (option === TelnetOptions.TERMINAL_TYPE) {
                         this.emitTelnet(TelnetCommands.WILL, option)
                     } else {
@@ -197,7 +211,16 @@ export class TelnetSession extends BaseSession {
                         this.emitTelnet(TelnetCommands.WONT, option)
                     } else {
                         this.logger.debug('(!) Unhandled option')
-                        this.emitTelnet(TelnetCommands.WILL, option)
+                        this.emitTelnet(TelnetCommands.WONT, option)
+                    }
+                }
+                if (command === TelnetCommands.WONT) {
+                    if (option === TelnetOptions.ECHO) {
+                        this.telnetRemoteEcho = false
+                        this.emitTelnet(TelnetCommands.DONT, option)
+                    } else {
+                        this.logger.debug('(!) Unhandled option')
+                        this.emitTelnet(TelnetCommands.DONT, option)
                     }
                 }
                 if (command === TelnetCommands.SUBOPTION) {

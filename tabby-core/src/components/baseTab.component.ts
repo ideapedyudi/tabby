@@ -1,4 +1,4 @@
-import { Observable, Subject, distinctUntilChanged, filter, debounceTime } from 'rxjs'
+import { Observable, Subject, BehaviorSubject, distinctUntilChanged, filter, debounceTime } from 'rxjs'
 import { EmbeddedViewRef, Injector, ViewContainerRef, ViewRef } from '@angular/core'
 import { RecoveryToken } from '../api/tabRecovery'
 import { BaseComponent } from './base.component'
@@ -75,14 +75,17 @@ export abstract class BaseTabComponent extends BaseComponent {
     private titleChange = new Subject<string>()
     private focused = new Subject<void>()
     private blurred = new Subject<void>()
-    private progress = new Subject<number|null>()
-    private activity = new Subject<boolean>()
+    protected visibility = new BehaviorSubject<boolean>(false)
+    protected progress = new BehaviorSubject<number|null>(null)
+    protected activity = new BehaviorSubject<boolean>(false)
     private destroyed = new Subject<void>()
 
     private _destroyCalled = false
 
     get focused$ (): Observable<void> { return this.focused }
     get blurred$ (): Observable<void> { return this.blurred }
+    /* @hidden */
+    get visibility$ (): Observable<boolean> { return this.visibility }
     get titleChange$ (): Observable<string> { return this.titleChange.pipe(distinctUntilChanged()) }
     get progress$ (): Observable<number|null> { return this.progress.pipe(distinctUntilChanged()) }
     get activity$ (): Observable<boolean> { return this.activity }
@@ -125,7 +128,7 @@ export abstract class BaseTabComponent extends BaseComponent {
     }
 
     /**
-     * Shows the acticity marker on the tab header
+     * Shows the activity marker on the tab header
      */
     displayActivity (): void {
         if (!this.hasActivity) {
@@ -135,7 +138,7 @@ export abstract class BaseTabComponent extends BaseComponent {
     }
 
     /**
-     * Removes the acticity marker from the tab header
+     * Removes the activity marker from the tab header
      */
     clearActivity (): void {
         if (this.hasActivity) {
@@ -177,6 +180,11 @@ export abstract class BaseTabComponent extends BaseComponent {
         this.blurred.next()
     }
 
+    /* @hidden */
+    emitVisibility (visibility: boolean): void {
+        this.visibility.next(visibility)
+    }
+
     insertIntoContainer (container: ViewContainerRef): EmbeddedViewRef<any> {
         this.viewContainerEmbeddedRef = container.insert(this.hostView) as EmbeddedViewRef<any>
         this.viewContainer = container
@@ -187,7 +195,10 @@ export abstract class BaseTabComponent extends BaseComponent {
         if (!this.viewContainer || !this.viewContainerEmbeddedRef) {
             return
         }
-        this.viewContainer.detach(this.viewContainer.indexOf(this.viewContainerEmbeddedRef))
+        const viewIndex = this.viewContainer.indexOf(this.viewContainerEmbeddedRef)
+        if (viewIndex !== -1) {
+            this.viewContainer.detach(viewIndex)
+        }
         this.viewContainerEmbeddedRef = undefined
         this.viewContainer = undefined
     }
@@ -218,7 +229,6 @@ export abstract class BaseTabComponent extends BaseComponent {
             this.destroyed.next()
         }
         this.destroyed.complete()
-        this.hostView.destroy()
     }
 
     /** @hidden */

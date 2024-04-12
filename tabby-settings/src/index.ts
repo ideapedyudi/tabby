@@ -7,6 +7,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll'
 import TabbyCorePlugin, { ToolbarButtonProvider, HotkeyProvider, ConfigProvider, HotkeysService, AppService } from 'tabby-core'
 
 import { EditProfileModalComponent } from './components/editProfileModal.component'
+import { EditProfileGroupModalComponent } from './components/editProfileGroupModal.component'
 import { HotkeyInputModalComponent } from './components/hotkeyInputModal.component'
 import { HotkeySettingsTabComponent } from './components/hotkeySettingsTab.component'
 import { MultiHotkeyInputComponent } from './components/multiHotkeyInput.component'
@@ -18,6 +19,7 @@ import { SetVaultPassphraseModalComponent } from './components/setVaultPassphras
 import { ProfilesSettingsTabComponent } from './components/profilesSettingsTab.component'
 import { ReleaseNotesComponent } from './components/releaseNotesTab.component'
 import { ConfigSyncSettingsTabComponent } from './components/configSyncSettingsTab.component'
+import { ShowSecretModalComponent } from './components/showSecretModal.component'
 
 import { ConfigSyncService } from './services/configSync.service'
 
@@ -48,6 +50,7 @@ import { HotkeySettingsTabProvider, WindowSettingsTabProvider, VaultSettingsTabP
     ],
     declarations: [
         EditProfileModalComponent,
+        EditProfileGroupModalComponent,
         HotkeyInputModalComponent,
         HotkeySettingsTabComponent,
         MultiHotkeyInputComponent,
@@ -59,6 +62,7 @@ import { HotkeySettingsTabProvider, WindowSettingsTabProvider, VaultSettingsTabP
         WindowSettingsTabComponent,
         ConfigSyncSettingsTabComponent,
         ReleaseNotesComponent,
+        ShowSecretModalComponent,
     ],
 })
 export default class SettingsModule {

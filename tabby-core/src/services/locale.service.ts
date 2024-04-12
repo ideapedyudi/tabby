@@ -7,6 +7,7 @@ import localeENUS from '@angular/common/locales/en'
 import localeENGB from '@angular/common/locales/en-GB'
 import localeAF from '@angular/common/locales/af'
 import localeBG from '@angular/common/locales/bg'
+import localeCS from '@angular/common/locales/cs'
 import localeDA from '@angular/common/locales/da'
 import localeDE from '@angular/common/locales/de'
 import localeES from '@angular/common/locales/es'
@@ -19,7 +20,9 @@ import localeKO from '@angular/common/locales/ko'
 import localePL from '@angular/common/locales/pl'
 import localePT from '@angular/common/locales/pt'
 import localeRU from '@angular/common/locales/ru'
+import localeSRSP from '@angular/common/locales/sr-Cyrl'
 import localeSV from '@angular/common/locales/sv'
+import localeTR from '@angular/common/locales/tr'
 import localeUK from '@angular/common/locales/uk'
 import localeZH from '@angular/common/locales/zh'
 import { Observable, Subject } from 'rxjs'
@@ -31,6 +34,7 @@ registerLocaleData(localeENUS)
 registerLocaleData(localeENGB)
 registerLocaleData(localeAF)
 registerLocaleData(localeBG)
+registerLocaleData(localeCS)
 registerLocaleData(localeDA)
 registerLocaleData(localeDE)
 registerLocaleData(localeES)
@@ -43,7 +47,9 @@ registerLocaleData(localeKO)
 registerLocaleData(localePL)
 registerLocaleData(localePT)
 registerLocaleData(localeRU)
+registerLocaleData(localeSRSP)
 registerLocaleData(localeSV)
+registerLocaleData(localeTR)
 registerLocaleData(localeUK)
 registerLocaleData(localeZH)
 
@@ -81,6 +87,10 @@ export class LocaleService {
         {
             code: 'id-ID',
             name: 'Bahasa Indonesia',
+        },
+        {
+            code: 'cs-CZ',
+            name: 'Čeština',
         },
         {
             code: 'da-DK',
@@ -131,12 +141,20 @@ export class LocaleService {
             name: 'Svenska',
         },
         {
+            code: 'tr-TR',
+            name: 'Türkçe',
+        },
+        {
             code: 'bg-BG',
             name: 'Български',
         },
         {
             code: 'ru-RU',
             name: 'Русский',
+        },
+        {
+            code: 'sr-SP',
+            name: 'Српски',
         },
         {
             code: 'uk-UA',

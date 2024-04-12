@@ -1,16 +1,16 @@
 import { BehaviorSubject, filter, firstValueFrom, takeUntil } from 'rxjs'
 import { Injector } from '@angular/core'
-import { ConfigService, getCSSFontFamily, HostAppService, HotkeysService, Platform, PlatformService, ThemesService } from 'tabby-core'
+import { ConfigService, getCSSFontFamily, getWindows10Build, HostAppService, HotkeysService, Platform, PlatformService, ThemesService } from 'tabby-core'
 import { Frontend, SearchOptions, SearchState } from './frontend'
-import { Terminal, ITheme } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
-import { LigaturesAddon } from 'xterm-addon-ligatures'
-import { ISearchOptions, SearchAddon } from 'xterm-addon-search'
-import { WebglAddon } from 'xterm-addon-webgl'
-import { Unicode11Addon } from 'xterm-addon-unicode11'
-import { SerializeAddon } from 'xterm-addon-serialize'
-import { ImageAddon } from 'xterm-addon-image'
-import { CanvasAddon } from 'xterm-addon-canvas'
+import { Terminal, ITheme } from '@xterm/xterm'
+import { FitAddon } from '@xterm/addon-fit'
+import { LigaturesAddon } from '@xterm/addon-ligatures'
+import { ISearchOptions, SearchAddon } from '@xterm/addon-search'
+import { WebglAddon } from '@xterm/addon-webgl'
+import { Unicode11Addon } from '@xterm/addon-unicode11'
+import { SerializeAddon } from '@xterm/addon-serialize'
+import { ImageAddon } from '@xterm/addon-image'
+import { CanvasAddon } from '@xterm/addon-canvas'
 import './xterm.css'
 import deepEqual from 'deep-equal'
 import { BaseTerminalProfile, TerminalColorScheme } from '../api/interfaces'
@@ -99,7 +99,10 @@ export class XTermFrontend extends Frontend {
             allowTransparency: true,
             allowProposedApi: true,
             overviewRulerWidth: 8,
-            windowsMode: process.platform === 'win32',
+            windowsPty: process.platform === 'win32' ? {
+                backend: this.configService.store.terminal.useConPTY ? 'conpty' : 'winpty',
+                buildNumber: getWindows10Build(),
+            } : undefined,
         })
         this.flowControl = new FlowControl(this.xterm)
         this.xtermCore = this.xterm['_core']
@@ -257,7 +260,7 @@ export class XTermFrontend extends Frontend {
         this.xterm.loadAddon(this.search)
 
         this.search.onDidChangeResults(state => {
-            this.searchState = state ?? { resultCount: 0 }
+            this.searchState = state
         })
 
         window.addEventListener('resize', this.resizeHandler)
@@ -360,7 +363,7 @@ export class XTermFrontend extends Frontend {
     private configureColors (scheme: TerminalColorScheme|undefined): void {
         const config = this.configService.store
 
-        scheme = scheme ?? config.terminal.colorScheme
+        scheme = scheme ?? this.themes._getActiveColorScheme()
 
         const theme: ITheme = {
             foreground: scheme!.foreground,

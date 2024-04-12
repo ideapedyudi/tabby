@@ -1,6 +1,5 @@
 import * as fs from 'mz/fs'
 import * as crypto from 'crypto'
-// eslint-disable-next-line @typescript-eslint/no-duplicate-imports, no-duplicate-imports
 import * as sshpk from 'sshpk'
 import colors from 'ansi-colors'
 import stripAnsi from 'strip-ansi'
@@ -210,7 +209,6 @@ export class SSHSession {
                 if (!await this.verifyHostKey(handshake)) {
                     this.ssh.end()
                     reject(new Error('Host key verification failed'))
-                    return
                 }
                 this.logger.info('Handshake complete:', handshake)
                 resolve()
@@ -300,7 +298,7 @@ export class SSHSession {
                 const modal = this.ngbModal.open(PromptModalComponent)
                 modal.componentInstance.prompt = `Username for ${this.profile.options.host}`
                 try {
-                    const result = await modal.result
+                    const result = await modal.result.catch(() => null)
                     this.authUsername = result?.value ?? null
                 } catch {
                     this.authUsername = 'root'
@@ -428,11 +426,7 @@ export class SSHSession {
             const modal = this.ngbModal.open(HostKeyPromptModalComponent)
             modal.componentInstance.selector = selector
             modal.componentInstance.digest = this.hostKeyDigest
-            try {
-                return await modal.result
-            } catch {
-                return false
-            }
+            return modal.result.catch(() => false)
         }
         return true
     }
@@ -495,7 +489,7 @@ export class SSHSession {
                 modal.componentInstance.showRememberCheckbox = true
 
                 try {
-                    const result = await modal.result
+                    const result = await modal.result.catch(() => null)
                     if (result) {
                         if (result.remember) {
                             this.savedPassword = result.value

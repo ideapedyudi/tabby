@@ -3,7 +3,7 @@ import { Component, ViewChild } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { firstBy } from 'thenby'
 
-import { ConfigService, FileProvidersService, Platform, HostAppService, PromptModalComponent, PartialProfile } from 'tabby-core'
+import { FileProvidersService, Platform, HostAppService, PromptModalComponent, PartialProfile, ProfilesService } from 'tabby-core'
 import { LoginScriptsSettingsComponent } from 'tabby-terminal'
 import { PasswordStorageService } from '../services/passwordStorage.service'
 import { ForwardedPortConfig, SSHAlgorithmType, SSHProfile } from '../api'
@@ -27,14 +27,14 @@ export class SSHProfileSettingsComponent {
 
     constructor (
         public hostApp: HostAppService,
-        private config: ConfigService,
+        private profilesService: ProfilesService,
         private passwordStorage: PasswordStorageService,
         private ngbModal: NgbModal,
         private fileProviders: FileProvidersService,
     ) { }
 
     async ngOnInit () {
-        this.jumpHosts = this.config.store.profiles.filter(x => x.type === 'ssh' && x !== this.profile)
+        this.jumpHosts = (await this.profilesService.getProfiles({ includeBuiltin: false })).filter(x => x.type === 'ssh' && x !== this.profile)
         this.jumpHosts.sort(firstBy(x => this.getJumpHostLabel(x)))
 
         for (const k of Object.values(SSHAlgorithmType)) {
@@ -67,7 +67,7 @@ export class SSHProfileSettingsComponent {
     }
 
     getJumpHostLabel (p: PartialProfile<SSHProfile>) {
-        return p.group ? `${p.group} / ${p.name}` : p.name
+        return p.group ? `${this.profilesService.resolveProfileGroupName(p.group)} / ${p.name}` : p.name
     }
 
     async setPassword () {
@@ -75,7 +75,7 @@ export class SSHProfileSettingsComponent {
         modal.componentInstance.prompt = `Password for ${this.profile.options.user}@${this.profile.options.host}`
         modal.componentInstance.password = true
         try {
-            const result = await modal.result
+            const result = await modal.result.catch(() => null)
             if (result?.value) {
                 this.passwordStorage.savePassword(this.profile, result.value)
                 this.hasSavedPassword = true
@@ -89,11 +89,13 @@ export class SSHProfileSettingsComponent {
     }
 
     async addPrivateKey () {
-        const ref = await this.fileProviders.selectAndStoreFile(`private key for ${this.profile.name}`)
-        this.profile.options.privateKeys = [
-            ...this.profile.options.privateKeys!,
-            ref,
-        ]
+        const ref = await this.fileProviders.selectAndStoreFile(`private key for ${this.profile.name}`).catch(() => null)
+        if (ref) {
+            this.profile.options.privateKeys = [
+                ...this.profile.options.privateKeys!,
+                ref,
+            ]
+        }
     }
 
     removePrivateKey (path: string) {
