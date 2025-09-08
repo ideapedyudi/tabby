@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs'
+import { Observable, Subject, takeWhile } from 'rxjs'
 import { Component, Injectable, ViewChild, ViewContainerRef, EmbeddedViewRef, AfterViewInit, OnDestroy, Injector } from '@angular/core'
 import { BaseTabComponent, BaseTabProcess, GetRecoveryTokenOptions } from './baseTab.component'
 import { TabRecoveryProvider, RecoveryToken } from '../api/tabRecovery'
@@ -381,6 +381,9 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
                     }
                 }
             }, 100)
+
+            // Propagate visibility to new children
+            this.emitVisibility(this.visibility.value)
         }
         this.initialized.next()
         this.initialized.complete()
@@ -818,7 +821,13 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
         if (this.disableDynamicTitle) {
             return
         }
-        this.setTitle([...new Set(this.getAllTabs().map(x => x.title))].join(' | '))
+        const titles = [
+            this.getFocusedTab()?.title,
+            ...this.getAllTabs()
+                .filter(x => x !== this.getFocusedTab())
+                .map(x => x.title),
+        ]
+        this.setTitle([...new Set(titles)].join(' | '))
     }
 
     private attachTabView (tab: BaseTabComponent) {
@@ -834,18 +843,40 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
             })
         }
 
-        tab.subscribeUntilDestroyed(tab.titleChange$, () => this.updateTitle())
-        tab.subscribeUntilDestroyed(tab.activity$, a => a ? this.displayActivity() : this.clearActivity())
-        tab.subscribeUntilDestroyed(tab.progress$, p => this.setProgress(p))
+        tab.subscribeUntilDestroyed(
+            this.observeUntilChildDetached(tab, tab.focused$),
+            () => this.updateTitle(),
+        )
+        tab.subscribeUntilDestroyed(
+            this.observeUntilChildDetached(tab, tab.titleChange$),
+            () => this.updateTitle(),
+        )
+        tab.subscribeUntilDestroyed(
+            this.observeUntilChildDetached(tab, tab.activity$),
+            a => a ? this.displayActivity() : this.clearActivity(),
+        )
+        tab.subscribeUntilDestroyed(
+            this.observeUntilChildDetached(tab, tab.progress$),
+            p => this.setProgress(p),
+        )
         if (tab.title) {
             this.updateTitle()
         }
-        tab.subscribeUntilDestroyed(tab.recoveryStateChangedHint$, () => {
-            this.recoveryStateChangedHint.next()
-        })
+        tab.subscribeUntilDestroyed(
+            this.observeUntilChildDetached(tab, tab.recoveryStateChangedHint$),
+            () => {
+                this.recoveryStateChangedHint.next()
+            },
+        )
         tab.destroyed$.subscribe(() => {
             this.removeTab(tab)
         })
+    }
+
+    private observeUntilChildDetached<T> (tab: BaseTabComponent, event: Observable<T>): Observable<T> {
+        return event.pipe(takeWhile(() => {
+            return this.getAllTabs().includes(tab)
+        }))
     }
 
     private onAfterTabAdded (tab: BaseTabComponent) {

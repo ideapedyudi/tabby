@@ -1292,6 +1292,78 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "C41M50N",
+      "name": "Charles Buffington",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29805363?v=4",
+      "profile": "https://cbuff.dev",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "GeminiLn",
+      "name": "Yu Qin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12425057?v=4",
+      "profile": "https://github.com/GeminiLn",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "fireblue",
+      "name": "fireblue",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1034929?v=4",
+      "profile": "https://github.com/fireblue",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "marko1616",
+      "name": "marko1616",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45327989?v=4",
+      "profile": "https://github.com/marko1616",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "SelfHosted-Club",
+      "name": "SelfHosted",
+      "avatar_url": "https://avatars.githubusercontent.com/u/128927132?v=4",
+      "profile": "https://www.selfhosted.sg/",
+      "contributions": [
+        "financial"
+      ]
+    },
+    {
+      "login": "xhiroga",
+      "name": "Hiroaki Ogasawara",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13391129?v=4",
+      "profile": "http://hiroga.hatenablog.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "geodic",
+      "name": "geodic",
+      "avatar_url": "https://avatars.githubusercontent.com/u/64704703?v=4",
+      "profile": "https://github.com/geodic",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "pfoundation",
+      "name": "P Foundation",
+      "avatar_url": "https://avatars.githubusercontent.com/u/80860929?v=4",
+      "profile": "https://p.foundation/",
+      "contributions": [
+        "financial"
+      ]
     }
   ],
   "contributorsPerLine": 7,

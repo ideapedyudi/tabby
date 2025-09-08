@@ -29,9 +29,9 @@
 [**Tabby**](https://tabby.sh) (ранее **Terminus**) — широко конфигурируемый эмулятор терминала, SSH- и COM-клиент для Windows, macOS и Linux:
 
 * Встроенный SSH- и Telnet-клиент и менеджер подключений;
-* Встроенный последовтаельный терминал;
+* Встроенный последовательный терминал;
 * Темы и цветовые схемы;
-* Полностью настраеваемые сочетания клавиш;
+* Полностью настраиваемые сочетания клавиш;
 * Панели;
 * Запоминание вкладок;
 * Поддержка PowerShell (and PS Core), WSL, Git-Bash, Cygwin, MSYS2, Cmder и CMD;
@@ -39,7 +39,7 @@
 * Полная поддержка Unicode, включая символы двойной ширины;
 * Не задыхается при быстром выводе;
 * Полноценный опыт работы с shell на Windows, включая дополнение слов и команд по Tab (при помощи Clink);
-* Втроенное защищённое хранилище для SSH-ключей и настроек;
+* Встроенное защищённое хранилище для SSH-ключей и настроек;
 * SSH-, SFTP- и Telnet-клиент доступен как [веб-приложение](https://tabby.sh/app) (также для [самостоятелньного хостинга](https://github.com/Eugeny/tabby-web)).
 
 # Содержание <!-- omit in toc -->
@@ -67,11 +67,11 @@
 
 ![](docs/readme-terminal.png)
 
-* Терминал V220 + различные дополнения;
+* Терминал VT220 + различные дополнения;
 * Деление окна на несколько панелей;
 * Вкладки на любой стороне окна;
 * Опционально закрепляемое окно с глобальной горячей клавишей для вызова («Quake console»);
-* Определение прогресса процесса;
+* Определение прогресса выполняемого процесса;
 * Уведомления о завершении процессов;
 * Защита от выполнения команд при вставке, предупреждения о вставке нескольких строк;
 * Лигатуры шрифтов;
@@ -94,7 +94,7 @@
 
 * Сохранение соединений;
 * Поддержка ввода readline;
-* Опциональый побатный ввод HEX и вывод hexdump;
+* Опциональный побатный ввод HEX и вывод hexdump;
 * Преобразование newline;
 * Автоматическое восстановление соединения.
 
@@ -115,10 +115,11 @@
 * [save-output](https://github.com/Eugeny/tabby-save-output) — запись вывода терминала в файл;
 * [sync-config](https://github.com/starxg/terminus-sync-config) — синхронизация конфига в Gist или Gitee;
 * [clippy](https://github.com/Eugeny/tabby-clippy) — плагин-пример, который постоянно будет вас бесить;
-* [workspace-manager](https://github.com/composer404/tabby-workspace-manager) — позволяет создавать пользовательские провили рабочего окружеиня на основе конфига;
+* [workspace-manager](https://github.com/composer404/tabby-workspace-manager) — позволяет создавать пользовательские профили рабочего окружения на основе конфига;
 * [search-in-browser](https://github.com/composer404/tabby-search-in-browser) — открывает браузер по умолчанию с текстом, выделенном во вкладке Tabby.
-* [sftp-tab](https://github.com/wljince007/tabby-sftp-tab) - open sftp tab for ssh connection like SecureCRT
-
+* [sftp-tab](https://github.com/wljince007/tabby-sftp-tab) - открывает sftp вкладку для ssh соединения, похож на SecureCRT
+* [web-auth-handler](https://github.com/Jazzmoon/tabby-web-auth-handler) - Встроенные всплывающие окна веб-аутентификации (Основано в основном для аутентификации в браузере warpgate)
+* [mcp-server](https://github.com/thuanpham582002/tabby-mcp-server) - Мощная интеграция сервера протокола Model Context Protocol для Tabby, которая беспрепятственно соединяется с ИИ-ассистентами через MCP-клиенты, такие как Cursor и Windsurf, улучшая рабочий процесс в терминале с помощью интеллектуальных возможностей искусственного интеллекта.
 <a name="themes"></a>
 # Темы
 
@@ -333,6 +334,16 @@ Pull-запросы и плагины приветствуются!
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://5k.work/"><img src="https://avatars.githubusercontent.com/u/82694310?v=4?s=100" width="100px;" alt="Mxmilu"/><br /><sub><b>Mxmilu</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=Mxmilu666" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://cbuff.dev"><img src="https://avatars.githubusercontent.com/u/29805363?v=4?s=100" width="100px;" alt="Charles Buffington"/><br /><sub><b>Charles Buffington</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=C41M50N" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/GeminiLn"><img src="https://avatars.githubusercontent.com/u/12425057?v=4?s=100" width="100px;" alt="Yu Qin"/><br /><sub><b>Yu Qin</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=GeminiLn" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/fireblue"><img src="https://avatars.githubusercontent.com/u/1034929?v=4?s=100" width="100px;" alt="fireblue"/><br /><sub><b>fireblue</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=fireblue" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/marko1616"><img src="https://avatars.githubusercontent.com/u/45327989?v=4?s=100" width="100px;" alt="marko1616"/><br /><sub><b>marko1616</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=marko1616" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.selfhosted.sg/"><img src="https://avatars.githubusercontent.com/u/128927132?v=4?s=100" width="100px;" alt="SelfHosted"/><br /><sub><b>SelfHosted</b></sub></a><br /><a href="#financial-SelfHosted-Club" title="Financial">💵</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://hiroga.hatenablog.com/"><img src="https://avatars.githubusercontent.com/u/13391129?v=4?s=100" width="100px;" alt="Hiroaki Ogasawara"/><br /><sub><b>Hiroaki Ogasawara</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=xhiroga" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/geodic"><img src="https://avatars.githubusercontent.com/u/64704703?v=4?s=100" width="100px;" alt="geodic"/><br /><sub><b>geodic</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=geodic" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://p.foundation/"><img src="https://avatars.githubusercontent.com/u/80860929?v=4?s=100" width="100px;" alt="P Foundation"/><br /><sub><b>P Foundation</b></sub></a><br /><a href="#financial-pfoundation" title="Financial">💵</a></td>
     </tr>
   </tbody>
 </table>

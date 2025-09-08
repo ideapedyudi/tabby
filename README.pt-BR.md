@@ -67,7 +67,7 @@ Esse README também está disponível em: <a  href="./README.md">:gb: English</a
 
 ![](docs/readme-terminal.png)
 
-* Um terminal V220 + várias extensões
+* Um terminal VT220 + várias extensões
 * Múltiplos painéis divididos aninhados
 * Guias em qualquer lado da janela
 * Opção de minimizar para a barra de tarefas com uma tecla de atalho global ("Quake console")
@@ -120,8 +120,9 @@ Plugins e temas podem ser instalados durante a execução na pagina de configura
 * [clippy](https://github.com/Eugeny/tabby-clippy) - um plugin de exemplo que te incomoda o tempo todo
 * [workspace-manager](https://github.com/composer404/tabby-workspace-manager) - permite criar perfis de espaço de trabalho personalizados com base na configuração fornecida
 * [search-in-browser](https://github.com/composer404/tabby-search-in-browser) - abre o navegador padrão do sistema com um texto selecionado na guia do Tabby
-* [sftp-tab](https://github.com/wljince007/tabby-sftp-tab) - open sftp tab for ssh connection like SecureCRT
-
+* [sftp-tab](https://github.com/wljince007/tabby-sftp-tab) - abre uma guia SFTP para conexão SSH como o SecureCRT
+* [web-auth-handler](https://github.com/Jazzmoon/tabby-web-auth-handler) - pop-ups de autenticação web dentro do aplicativo (Construído principalmente para autenticação in-browser do warpgate)
+* [mcp-server](https://github.com/thuanpham582002/tabby-mcp-server) - Integração poderosa do servidor Model Context Protocol para Tabby que se conecta perfeitamente com assistentes de IA através de clientes MCP como Cursor e Windsurf, aprimorando seu fluxo de trabalho no terminal com recursos inteligentes de IA.
 <a name="themes"></a>
 
 # Temas
@@ -341,6 +342,16 @@ Obrigado vai para essas pessoas maravilhosas ([emoji key](https://allcontributor
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://5k.work/"><img src="https://avatars.githubusercontent.com/u/82694310?v=4?s=100" width="100px;" alt="Mxmilu"/><br /><sub><b>Mxmilu</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=Mxmilu666" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://cbuff.dev"><img src="https://avatars.githubusercontent.com/u/29805363?v=4?s=100" width="100px;" alt="Charles Buffington"/><br /><sub><b>Charles Buffington</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=C41M50N" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/GeminiLn"><img src="https://avatars.githubusercontent.com/u/12425057?v=4?s=100" width="100px;" alt="Yu Qin"/><br /><sub><b>Yu Qin</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=GeminiLn" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/fireblue"><img src="https://avatars.githubusercontent.com/u/1034929?v=4?s=100" width="100px;" alt="fireblue"/><br /><sub><b>fireblue</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=fireblue" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/marko1616"><img src="https://avatars.githubusercontent.com/u/45327989?v=4?s=100" width="100px;" alt="marko1616"/><br /><sub><b>marko1616</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=marko1616" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.selfhosted.sg/"><img src="https://avatars.githubusercontent.com/u/128927132?v=4?s=100" width="100px;" alt="SelfHosted"/><br /><sub><b>SelfHosted</b></sub></a><br /><a href="#financial-SelfHosted-Club" title="Financial">💵</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://hiroga.hatenablog.com/"><img src="https://avatars.githubusercontent.com/u/13391129?v=4?s=100" width="100px;" alt="Hiroaki Ogasawara"/><br /><sub><b>Hiroaki Ogasawara</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=xhiroga" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/geodic"><img src="https://avatars.githubusercontent.com/u/64704703?v=4?s=100" width="100px;" alt="geodic"/><br /><sub><b>geodic</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=geodic" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://p.foundation/"><img src="https://avatars.githubusercontent.com/u/80860929?v=4?s=100" width="100px;" alt="P Foundation"/><br /><sub><b>P Foundation</b></sub></a><br /><a href="#financial-pfoundation" title="Financial">💵</a></td>
     </tr>
   </tbody>
 </table>

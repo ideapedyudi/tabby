@@ -13,9 +13,12 @@ import { ResizeEvent, BaseTerminalProfile } from './interfaces'
 import { TerminalDecorator } from './decorator'
 import { SearchPanelComponent } from '../components/searchPanel.component'
 import { MultifocusService } from '../services/multifocus.service'
+import { getTerminalBackgroundColor } from '../helpers'
 
 
 const INACTIVE_TAB_UNLOAD_DELAY = 1000 * 30
+const OSC_FOCUS_IN = Buffer.from('\x1b[I')
+const OSC_FOCUS_OUT = Buffer.from('\x1b[O')
 
 /**
  * A class to base your custom terminal tabs on
@@ -308,10 +311,16 @@ export class BaseTerminalTabComponent<P extends BaseTerminalProfile> extends Bas
                 case 'scroll-to-top':
                     this.frontend?.scrollToTop()
                     break
-                case 'scroll-up':
+                case 'scroll-page-up':
                     this.frontend?.scrollPages(-1)
                     break
+                case 'scroll-up':
+                    this.frontend?.scrollLines(-1)
+                    break
                 case 'scroll-down':
+                    this.frontend?.scrollLines(1)
+                    break
+                case 'scroll-page-down':
                     this.frontend?.scrollPages(1)
                     break
                 case 'scroll-to-bottom':
@@ -487,7 +496,7 @@ export class BaseTerminalTabComponent<P extends BaseTerminalProfile> extends Bas
             data = Buffer.from(data, 'utf-8')
         }
         this.session?.feedFromTerminal(data)
-        if (this.config.store.terminal.scrollOnInput) {
+        if (this.config.store.terminal.scrollOnInput && !data.equals(OSC_FOCUS_IN) && !data.equals(OSC_FOCUS_OUT)) {
             this.frontend?.scrollToBottom()
         }
     }
@@ -535,7 +544,7 @@ export class BaseTerminalTabComponent<P extends BaseTerminalProfile> extends Bas
         }
 
         if (!this.alternateScreenActive) {
-            if (data.includes('\r') && this.config.store.terminal.warnOnMultilinePaste) {
+            if ((data.includes('\r') || data.includes('\n')) && this.config.store.terminal.warnOnMultilinePaste) {
                 const buttons = [
                     this.translate.instant('Paste'),
                     this.translate.instant('Cancel'),
@@ -575,14 +584,7 @@ export class BaseTerminalTabComponent<P extends BaseTerminalProfile> extends Bas
     configure (): void {
         this.frontend?.configure(this.profile)
 
-        if (!this.themes.findCurrentTheme().followsColorScheme && this.config.store.terminal.background === 'colorScheme') {
-            const scheme = this.profile.terminalColorScheme ?? this.config.store.terminal.colorScheme
-            if (scheme.background) {
-                this.backgroundColor = scheme.background
-            }
-        } else {
-            this.backgroundColor = null
-        }
+        this.backgroundColor = getTerminalBackgroundColor(this.config, this.themes, this.profile.terminalColorScheme)
     }
 
     zoomIn (): void {

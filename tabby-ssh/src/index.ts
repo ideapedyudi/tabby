@@ -1,5 +1,3 @@
-import './polyfills'
-
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
@@ -68,4 +66,5 @@ export default class SSHModule { }
 
 export * from './api'
 export { SFTPFile, SFTPSession } from './session/sftp'
-export { SFTPPanelComponent }
+export { SFTPPanelComponent, SSHTabComponent }
+export { PasswordStorageService } from './services/passwordStorage.service'

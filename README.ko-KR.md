@@ -66,7 +66,7 @@ This README is also available in: <a  href="./README.md">:gb: English</a> · <a 
 
 ![](docs/readme-terminal.png)
 
-* A V220 터미널 + 다양한 확장
+* A VT220 터미널 + 다양한 확장
 * 여러 개의 분할 창 중첩
 * 모든 측면에 탭이 위치함
 * 전역 스폰 단축키가 있는 도킹 가능한 윈도우 ("Quake console")
@@ -107,7 +107,7 @@ This README is also available in: <a  href="./README.md">:gb: English</a> · <a 
 
 플러그인과 테마는 Tabby 내부의 설정에서 직접 설치할 수 있습니다.
 
-* [clickable-links](https://github.com/Eugeny/tabby-clickable-links) - m터미널의 경로 및 URL을 클릭 가능하게
+* [clickable-links](https://github.com/Eugeny/tabby-clickable-links) - 터미널의 경로 및 URL을 클릭 가능하게
 * [docker](https://github.com/Eugeny/tabby-docker) - Docker 컨테이너에 연결
 * [title-control](https://github.com/kbjr/terminus-title-control) - 접두사, 접미사 및/또는 문자열 제거를 제공하여 터미널 탭의 제목을 수정
 * [quick-cmds](https://github.com/Domain/terminus-quick-cmds) - 하나 또는 모든 터미널 탭에 신속한 명령 전송
@@ -116,8 +116,9 @@ This README is also available in: <a  href="./README.md">:gb: English</a> · <a 
 * [clippy](https://github.com/Eugeny/tabby-clippy) - 항상 당신을 귀찮게 하는 예제 플러그인
 * [workspace-manager](https://github.com/composer404/tabby-workspace-manager) - 주어진 구성을 기반으로 사용자 정의 작업 공간 프로필을 생성할 수 있습니다
 * [search-in-browser](https://github.com/composer404/tabby-search-in-browser) - Tabby의 탭에서 선택한 텍스트로 기본 시스템 브라우저를 엽니다
-* [sftp-tab](https://github.com/wljince007/tabby-sftp-tab) - open sftp tab for ssh connection like SecureCRT
-
+* [sftp-tab](https://github.com/wljince007/tabby-sftp-tab) - SecureCRT와 유사하게 SSH 연결에 대한 SFTP 탭을 엽니다.
+* [web-auth-handler](https://github.com/Jazzmoon/tabby-web-auth-handler) - 앱 내 웹 인증 팝업 (주로 warpgate 브라우저 인증을 위해 구축)
+* [mcp-server](https://github.com/thuanpham582002/tabby-mcp-server) - Cursor 및 Windsurf와 같은 MCP 클라이언트를 통해 AI 어시스턴트와 원활하게 연결되는 Tabby용 강력한 모델 컨텍스트 프로토콜 서버 통합으로, 지능형 AI 기능으로 터미널 워크플로우를 향상시킵니다.
 <a name="themes"></a>
 # 테마
 
@@ -143,7 +144,7 @@ Pull requests and plugins are welcome!
 ---
 <a name="contributors"></a>
 
-여기있는 멋진 사람들에게 진심으로 감사합니다. ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+여기 있는 멋진 사람들에게 진심으로 감사합니다. ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -332,6 +333,16 @@ Pull requests and plugins are welcome!
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://5k.work/"><img src="https://avatars.githubusercontent.com/u/82694310?v=4?s=100" width="100px;" alt="Mxmilu"/><br /><sub><b>Mxmilu</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=Mxmilu666" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://cbuff.dev"><img src="https://avatars.githubusercontent.com/u/29805363?v=4?s=100" width="100px;" alt="Charles Buffington"/><br /><sub><b>Charles Buffington</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=C41M50N" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/GeminiLn"><img src="https://avatars.githubusercontent.com/u/12425057?v=4?s=100" width="100px;" alt="Yu Qin"/><br /><sub><b>Yu Qin</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=GeminiLn" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/fireblue"><img src="https://avatars.githubusercontent.com/u/1034929?v=4?s=100" width="100px;" alt="fireblue"/><br /><sub><b>fireblue</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=fireblue" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/marko1616"><img src="https://avatars.githubusercontent.com/u/45327989?v=4?s=100" width="100px;" alt="marko1616"/><br /><sub><b>marko1616</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=marko1616" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.selfhosted.sg/"><img src="https://avatars.githubusercontent.com/u/128927132?v=4?s=100" width="100px;" alt="SelfHosted"/><br /><sub><b>SelfHosted</b></sub></a><br /><a href="#financial-SelfHosted-Club" title="Financial">💵</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://hiroga.hatenablog.com/"><img src="https://avatars.githubusercontent.com/u/13391129?v=4?s=100" width="100px;" alt="Hiroaki Ogasawara"/><br /><sub><b>Hiroaki Ogasawara</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=xhiroga" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/geodic"><img src="https://avatars.githubusercontent.com/u/64704703?v=4?s=100" width="100px;" alt="geodic"/><br /><sub><b>geodic</b></sub></a><br /><a href="https://github.com/Eugeny/tabby/commits?author=geodic" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://p.foundation/"><img src="https://avatars.githubusercontent.com/u/80860929?v=4?s=100" width="100px;" alt="P Foundation"/><br /><sub><b>P Foundation</b></sub></a><br /><a href="#financial-pfoundation" title="Financial">💵</a></td>
     </tr>
   </tbody>
 </table>

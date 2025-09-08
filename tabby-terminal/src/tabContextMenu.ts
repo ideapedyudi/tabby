@@ -180,9 +180,7 @@ export class SaveAsProfileContextMenu extends TabContextMenuItemProvider {
                             return
                         }
 
-                        const options = {
-                            ...tab.profile.options,
-                        }
+                        const options = JSON.parse(JSON.stringify(tab.profile.options))
 
                         const cwd = await tab.session?.getWorkingDirectory() ?? tab.profile.options.cwd
                         if (cwd) {

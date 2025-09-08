@@ -195,7 +195,13 @@ export class VaultService {
         if (!vault) {
             return null
         }
-        return vault.secrets.find(s => s.type === type && this.keyMatches(key, s)) ?? null
+        let vaultSecret = vault.secrets.find(s => s.type === type && this.keyMatches(key, s))
+        if (!vaultSecret) {
+            // search for secret without host in vault (like a default user/password used in multiple servers)
+            key['host'] = null
+            vaultSecret = vault.secrets.find(s => s.type === type && this.keyMatches(key, s))
+        }
+        return vaultSecret ?? null
     }
 
     async addSecret (secret: VaultSecret): Promise<void> {
@@ -306,7 +312,7 @@ export class VaultFileProvider extends FileProvider {
                 id,
                 description: `${description} (${transfer.getName()})`,
             },
-            value: (await transfer.readAll()).toString('base64'),
+            value: Buffer.from(await transfer.readAll()).toString('base64'),
         })
         return `${this.prefix}${id}`
     }

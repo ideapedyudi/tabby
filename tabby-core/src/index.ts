@@ -2,7 +2,7 @@ import { NgModule, ModuleWithProviders, LOCALE_ID } from '@angular/core'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModule, NgbTooltipConfig } from '@ng-bootstrap/ng-bootstrap'
 import { NgxFilesizeModule } from 'ngx-filesize'
 import { DragDropModule } from '@angular/cdk/drag-drop'
 import { TranslateModule, TranslateCompiler, TranslateService, MissingTranslationHandler } from '@ngx-translate/core'
@@ -37,16 +37,16 @@ import { FastHtmlBindDirective } from './directives/fastHtmlBind.directive'
 import { DropZoneDirective } from './directives/dropZone.directive'
 import { CdkAutoDropGroup } from './directives/cdkAutoDropGroup.directive'
 
-import { Theme, CLIHandler, TabContextMenuItemProvider, TabRecoveryProvider, HotkeyProvider, ConfigProvider, PlatformService, FileProvider, ProfilesService, ProfileProvider, QuickConnectProfileProvider, SelectorOption, Profile, SelectorService, CommandProvider } from './api'
+import { Theme, CLIHandler, TabContextMenuItemProvider, TabRecoveryProvider, HotkeyProvider, ConfigProvider, PlatformService, FileProvider, ProfilesService, ProfileProvider, QuickConnectProfileProvider, SelectorOption, Profile, SelectorService, CommandProvider, PartialProfileGroup, ProfileGroup } from './api'
 
 import { AppService } from './services/app.service'
 import { ConfigService } from './services/config.service'
 import { VaultFileProvider } from './services/vault.service'
 import { HotkeysService } from './services/hotkeys.service'
-import { CustomMissingTranslationHandler, LocaleService } from './services/locale.service'
+import { CustomMissingTranslationHandler, LocaleService, TabbyFormatedDatePipe } from './services/locale.service'
 import { CommandService } from './services/commands.service'
 
-import { StandardTheme, StandardCompactTheme, PaperTheme, NewTheme } from './theme'
+import { NewTheme } from './theme'
 import { CoreConfigProvider } from './config'
 import { AppHotkeyProvider } from './hotkeys'
 import { TaskCompletionContextMenu, CommonOptionsContextMenu, TabManagementContextMenu, ProfilesContextMenu } from './tabContextMenu'
@@ -60,9 +60,6 @@ export function TranslateMessageFormatCompilerFactory (): TranslateMessageFormat
 
 const PROVIDERS = [
     { provide: HotkeyProvider, useClass: AppHotkeyProvider, multi: true },
-    { provide: Theme, useClass: StandardTheme, multi: true },
-    { provide: Theme, useClass: StandardCompactTheme, multi: true },
-    { provide: Theme, useClass: PaperTheme, multi: true },
     { provide: Theme, useClass: NewTheme, multi: true },
     { provide: ConfigProvider, useClass: CoreConfigProvider, multi: true },
     { provide: TabContextMenuItemProvider, useClass: CommonOptionsContextMenu, multi: true },
@@ -133,6 +130,7 @@ const PROVIDERS = [
         DropZoneDirective,
         CdkAutoDropGroup,
         ProfileIconComponent,
+        TabbyFormatedDatePipe,
     ],
     exports: [
         AppRootComponent,
@@ -147,6 +145,7 @@ const PROVIDERS = [
         TranslateModule,
         CdkAutoDropGroup,
         ProfileIconComponent,
+        TabbyFormatedDatePipe,
     ],
 })
 export default class AppModule { // eslint-disable-line @typescript-eslint/no-extraneous-class
@@ -156,6 +155,7 @@ export default class AppModule { // eslint-disable-line @typescript-eslint/no-ex
         platform: PlatformService,
         hotkeys: HotkeysService,
         commands: CommandService,
+        ngbTooltipConfig: NgbTooltipConfig,
         public locale: LocaleService,
         private translate: TranslateService,
         private profilesService: ProfilesService,
@@ -181,23 +181,31 @@ export default class AppModule { // eslint-disable-line @typescript-eslint/no-ex
                 if (profile) {
                     profilesService.openNewTabForProfile(profile)
                 }
-            }
-            if (hotkey.startsWith('profile-selectors.')) {
+            } else if (hotkey.startsWith('profile-selectors.')) {
                 const id = hotkey.substring(hotkey.indexOf('.') + 1)
                 const provider = profilesService.getProviders().find(x => x.id === id)
                 if (!provider) {
                     return
                 }
                 this.showSelector(provider).catch(() => null)
-            }
-            if (hotkey === 'command-selector') {
+            } else if (hotkey.startsWith('group-selectors.')) {
+                const id = hotkey.substring(hotkey.indexOf('.') + 1)
+                const groups = await this.profilesService.getProfileGroups({ includeProfiles: true })
+                const group = groups.find(x => x.id === id)
+                if (!group) {
+                    return
+                }
+                this.showGroupSelector(group).catch(() => null)
+            } else if (hotkey === 'command-selector') {
                 commands.showSelector().catch(() => null)
-            }
-
-            if (hotkey === 'profile-selector') {
+            } else if (hotkey === 'profile-selector') {
                 commands.run('core:profile-selector', {})
             }
         })
+
+        ngbTooltipConfig.openDelay = 750
+        ngbTooltipConfig.placement = 'top bottom auto'
+        ngbTooltipConfig.container = 'body'
     }
 
     async showSelector (provider: ProfileProvider<Profile>): Promise<void> {
@@ -228,6 +236,21 @@ export default class AppModule { // eslint-disable-line @typescript-eslint/no-ex
                 },
             })
         }
+
+        await this.selector.show(this.translate.instant('Select profile'), options)
+    }
+
+    async showGroupSelector (group: PartialProfileGroup<ProfileGroup>): Promise<void> {
+        if (this.selector.active) {
+            return
+        }
+
+        const profiles = group.profiles ?? []
+
+        const options: SelectorOption<void>[] = profiles.map(p => ({
+            ...this.profilesService.selectorOptionForProfile(p),
+            callback: () => this.profilesService.openNewTabForProfile(p),
+        }))
 
         await this.selector.show(this.translate.instant('Select profile'), options)
     }
