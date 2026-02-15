@@ -14,13 +14,13 @@ export class SSHProfilesService extends QuickConnectProfileProvider<SSHProfile> 
     settingsComponent = SSHProfileSettingsComponent
     configDefaults = {
         options: {
-            host: null,
+            host: '',
             port: 22,
             user: 'root',
             auth: null,
             password: null,
             privateKeys: [],
-            keepaliveInterval: null,
+            keepaliveInterval: 5000,
             keepaliveCountMax: 10,
             readyTimeout: null,
             x11: false,
